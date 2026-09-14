@@ -60,39 +60,55 @@
             color: #d4af37;
         }
         .profile-title {
-            font-size: 12px;
+            font-size: 13px;
             color: #aaa;
-            letter-spacing: 2px;
+            letter-spacing: 1.5px;
             text-transform: uppercase;
             margin-bottom: 25px;
         }
-        /* Hidden Icon Links Grid */
-        .icon-grid {
-            display: flex;
-            justify-content: center;
-            gap: 15px;
-            margin-bottom: 25px;
-        }
-        .icon-btn {
-            width: 50px;
-            height: 50px;
-            background: rgba(255, 255, 255, 0.05);
-            border: 1px solid rgba(212, 175, 55, 0.4);
-            border-radius: 50%;
-            display: flex;
-            justify-content: center;
-            align-items: center;
-            color: #d4af37;
-            font-size: 20px;
+        .profile-title a {
+            color: #aaa;
             text-decoration: none;
-            transition: all 0.3s ease;
-            box-shadow: 0 5px 15px rgba(0,0,0,0.3);
+            transition: 0.3s;
+            display: inline-flex;
+            align-items: center;
+            gap: 8px;
         }
-        .icon-btn:hover {
-            background: #d4af37;
-            color: #000;
-            transform: translateY(-3px);
-            box-shadow: 0 8px 20px rgba(212, 175, 55, 0.6);
+        .profile-title a:hover {
+            color: #d4af37;
+        }
+        /* Contact List Links Box */
+        .contact-list {
+            display: flex;
+            flex-direction: column;
+            gap: 12px;
+            margin-bottom: 20px;
+        }
+        .contact-item {
+            background: rgba(255, 255, 255, 0.05);
+            border: 1px solid rgba(212, 175, 55, 0.3);
+            padding: 12px 15px;
+            border-radius: 12px;
+            display: flex;
+            align-items: center;
+            gap: 12px;
+            color: #ccc;
+            text-decoration: none;
+            font-size: 14px;
+            transition: all 0.3s ease;
+            box-shadow: 0 4px 10px rgba(0,0,0,0.2);
+        }
+        .contact-item i {
+            font-size: 18px;
+            color: #d4af37;
+            width: 25px;
+            text-align: center;
+        }
+        .contact-item:hover {
+            background: rgba(212, 175, 55, 0.15);
+            border-color: #d4af37;
+            color: #fff;
+            transform: translateY(-2px);
         }
         /* Social Links Box */
         .social-box {
@@ -109,13 +125,13 @@
         }
         .social-links a {
             color: #ccc;
-            font-size: 22px;
+            font-size: 20px;
             text-decoration: none;
             transition: 0.3s;
         }
         .social-links a:hover {
             color: #d4af37;
-            transform: scale(1.1);
+            transform: scale(1.15);
         }
         .footer-text {
             font-size: 10px;
@@ -129,42 +145,41 @@
     <div class="card-container">
         <!-- Profile Avatar -->
         <div class="avatar-box">
-            <!-- फोटोको नाम avtar.jpg राखिएको छ -->
             <img src="avtar.jpg" alt="KAMAL G.C.">
         </div>
 
         <div class="profile-name">
             KAMAL G.C. <i class="fa-solid fa-certificate" title="VIP Verified"></i>
         </div>
-        <div class="profile-title">SHIVARAJ-9, ANCHALPUR</div>
-
-        <!-- Hidden Direct Action Links (Map, WhatsApp, Email) -->
-        <div class="icon-grid">
-            <!-- Location Link (शिवराज ९ अञ्चलपुर म्याप) -->
-            <a href="https://maps.app.goo.gl/Txq4BzhCLZWK36e3A" target="_blank" class="icon-btn" title="Location Map">
-                <i class="fa-solid fa-location-dot"></i>
-            </a>
-            <!-- WhatsApp Link -->
-            <a href="https://wa.me/9779821406500" target="_blank" class="icon-btn" title="WhatsApp">
-                <i class="fa-brands fa-whatsapp"></i>
-            </a>
-            <!-- Email Link -->
-            <a href="mailto:info@kamalgc.com.np" class="icon-btn" title="Email Us">
-                <i class="fa-solid fa-envelope"></i>
+        <div class="profile-title">
+            <a href="https://maps.app.goo.gl/Txq4BzhCLZWK36e3A" target="_blank">
+                <i class="fa-solid fa-location-dot"></i> शिवराज ९ अञ्चलपुर
             </a>
         </div>
 
-        <!-- Social Media & YouTube Hidden Links Box -->
+        <!-- Contact Options with Real Icons & Direct Links -->
+        <div class="contact-list">
+            <!-- WhatsApp Link -->
+            <a href="https://wa.me/9779821406500" target="_blank" class="contact-item">
+                <i class="fa-brands fa-whatsapp"></i> +977 9821406500
+            </a>
+            <!-- Email Link -->
+            <a href="mailto:info@kamalgc.com.np" class="contact-item">
+                <i class="fa-solid fa-envelope"></i> info.kamalgc.com.np
+            </a>
+        </div>
+
+        <!-- Social Media Links Box -->
         <div class="social-box">
             <div class="social-links">
                 <!-- Facebook Profile -->
-                <a href="https://www.facebook.com/share/1C2yZkz7MS" target="_blank" title="Facebook Profile"><i class="fa-brands fa-facebook-f"></i></a>
+                <a href="https://www.facebook.com/share/1C2yZkz7MS" target="_blank" title="Facebook"><i class="fa-brands fa-facebook-f"></i></a>
                 <!-- Facebook Page -->
                 <a href="https://www.facebook.com/share/19H7Jj6U8y" target="_blank" title="Facebook Page"><i class="fa-brands fa-facebook"></i></a>
                 <!-- Instagram -->
                 <a href="https://www.instagram.com/chhetrikamal97?stkn=MTgzcml5czdlaHV2eQ" target="_blank" title="Instagram"><i class="fa-brands fa-instagram"></i></a>
-                <!-- YouTube (SK Official97) -->
-                <a href="https://youtube.com/@sk_official97?si=ayrDWurrapho9GxK" target="_blank" title="YouTube SK Official97"><i class="fa-brands fa-youtube"></i></a>
+                <!-- YouTube -->
+                <a href="https://youtube.com/@sk_official97?si=ayrDWurrapho9GxK" target="_blank" title="YouTube"><i class="fa-brands fa-youtube"></i></a>
             </div>
         </div>
 
