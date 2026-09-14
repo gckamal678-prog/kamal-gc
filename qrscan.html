@@ -66,77 +66,45 @@
             text-transform: uppercase;
             margin-bottom: 25px;
         }
-        .profile-title a {
-            color: #aaa;
-            text-decoration: none;
-            transition: 0.3s;
-            display: inline-flex;
-            align-items: center;
-            gap: 8px;
-        }
-        .profile-title a:hover {
-            color: #d4af37;
-        }
-        /* Contact List Links Box */
-        .contact-list {
+        /* Vertical List Style for All Items */
+        .link-list {
             display: flex;
             flex-direction: column;
             gap: 12px;
             margin-bottom: 20px;
         }
-        .contact-item {
+        .link-item {
             background: rgba(255, 255, 255, 0.05);
             border: 1px solid rgba(212, 175, 55, 0.3);
             padding: 12px 15px;
             border-radius: 12px;
             display: flex;
             align-items: center;
-            gap: 12px;
+            gap: 15px;
             color: #ccc;
             text-decoration: none;
             font-size: 14px;
             transition: all 0.3s ease;
             box-shadow: 0 4px 10px rgba(0,0,0,0.2);
+            text-align: left;
         }
-        .contact-item i {
+        .link-item i {
             font-size: 18px;
             color: #d4af37;
             width: 25px;
             text-align: center;
         }
-        .contact-item:hover {
+        .link-item:hover {
             background: rgba(212, 175, 55, 0.15);
             border-color: #d4af37;
             color: #fff;
             transform: translateY(-2px);
         }
-        /* Social Links Box */
-        .social-box {
-            background: rgba(0, 0, 0, 0.4);
-            border-radius: 15px;
-            padding: 15px;
-            border: 1px solid rgba(255, 255, 255, 0.1);
-            margin-bottom: 20px;
-        }
-        .social-links {
-            display: flex;
-            justify-content: space-around;
-            align-items: center;
-        }
-        .social-links a {
-            color: #ccc;
-            font-size: 20px;
-            text-decoration: none;
-            transition: 0.3s;
-        }
-        .social-links a:hover {
-            color: #d4af37;
-            transform: scale(1.15);
-        }
         .footer-text {
             font-size: 10px;
             color: #666;
             letter-spacing: 1px;
+            margin-top: 15px;
         }
     </style>
 </head>
@@ -151,36 +119,46 @@
         <div class="profile-name">
             KAMAL G.C. <i class="fa-solid fa-certificate" title="VIP Verified"></i>
         </div>
-        <div class="profile-title">
-            <a href="https://maps.app.goo.gl/Txq4BzhCLZWK36e3A" target="_blank">
+        <div class="profile-title">KAMAL G.C.</div>
+
+        <!-- Vertical Link List (Top to Bottom) -->
+        <div class="link-list">
+            <!-- 1. Location -->
+            <a href="https://maps.app.goo.gl/Txq4BzhCLZWK36e3A" target="_blank" class="link-item">
                 <i class="fa-solid fa-location-dot"></i> शिवराज ९ अञ्चलपुर
             </a>
-        </div>
-
-        <!-- Contact Options with Real Icons & Direct Links -->
-        <div class="contact-list">
-            <!-- WhatsApp Link -->
-            <a href="https://wa.me/9779821406500" target="_blank" class="contact-item">
-                <i class="fa-brands fa-whatsapp"></i> +977 9821406500
+            <!-- 2. WhatsApp -->
+            <a href="https://wa.me/9779821406500" target="_blank" class="link-item">
+                <i class="fa-brands fa-whatsapp"></i> +9779821406500
             </a>
-            <!-- Email Link -->
-            <a href="mailto:info@kamalgc.com.np" class="contact-item">
+            <!-- 3. Email -->
+            <a href="mailto:info@kamalgc.com.np" class="link-item">
                 <i class="fa-solid fa-envelope"></i> info.kamalgc.com.np
             </a>
-        </div>
-
-        <!-- Social Media Links Box -->
-        <div class="social-box">
-            <div class="social-links">
-                <!-- Facebook Profile -->
-                <a href="https://www.facebook.com/share/1C2yZkz7MS" target="_blank" title="Facebook"><i class="fa-brands fa-facebook-f"></i></a>
-                <!-- Facebook Page -->
-                <a href="https://www.facebook.com/share/19H7Jj6U8y" target="_blank" title="Facebook Page"><i class="fa-brands fa-facebook"></i></a>
-                <!-- Instagram -->
-                <a href="https://www.instagram.com/chhetrikamal97?stkn=MTgzcml5czdlaHV2eQ" target="_blank" title="Instagram"><i class="fa-brands fa-instagram"></i></a>
-                <!-- YouTube -->
-                <a href="https://youtube.com/@sk_official97?si=ayrDWurrapho9GxK" target="_blank" title="YouTube"><i class="fa-brands fa-youtube"></i></a>
-            </div>
+            <!-- 4. Facebook Profile -->
+            <a href="https://www.facebook.com/share/1C2yZkz7MS" target="_blank" class="link-item">
+                <i class="fa-brands fa-facebook-f"></i> facebook
+            </a>
+            <!-- 5. Facebook Page -->
+            <a href="https://www.facebook.com/share/19H7Jj6U8y" target="_blank" class="link-item">
+                <i class="fa-brands fa-facebook"></i> facebook page
+            </a>
+            <!-- 6. Instagram -->
+            <a href="https://www.instagram.com/chhetrikamal97?stkn=MTgzcml5czdlaHV2eQ" target="_blank" class="link-item">
+                <i class="fa-brands fa-instagram"></i> instagram
+            </a>
+            <!-- 7. YouTube -->
+            <a href="https://youtube.com/@sk_official97?si=ayrDWurrapho9GxK" target="_blank" class="link-item">
+                <i class="fa-brands fa-youtube"></i> youtube
+            </a>
+            <!-- 8. पाठशाला (Kids Subdomain) -->
+            <a href="https://kids.kamalgc.com.np" target="_blank" class="link-item">
+                <i class="fa-solid fa-graduation-cap"></i> पाठशाला
+            </a>
+            <!-- 9. Digital Notebook (DN Subdomain) -->
+            <a href="https://dn.kamalgc.com.np" target="_blank" class="link-item">
+                <i class="fa-solid fa-book-open"></i> Digital Notebook
+            </a>
         </div>
 
         <div class="footer-text">
