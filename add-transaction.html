@@ -416,7 +416,6 @@ tailwind.config = {
         const npr = parseFloat(document.getElementById('txn-amount-npr').value) || 0;
         const inr = parseFloat(document.getElementById('txn-amount-inr').value) || 0;
         
-        // Ensure total calculation updates correctly for Expense or other types
         let total = parseFloat(document.getElementById('txn-total-calc').value) || 0;
         if (total === 0) {
             total = npr + (inr * INR_RATE);
@@ -462,7 +461,6 @@ tailwind.config = {
             return;
         }
 
-        // Grouping transactions by Party Name (case-insensitive grouping)
         const parties = {};
         transactions.forEach((tx, idx) => {
             const rawName = tx.party || 'Unknown';
@@ -477,7 +475,6 @@ tailwind.config = {
             }
             parties[matchedKey].items.push({ ...tx, originalIndex: idx });
 
-            // Fix calculation: Expense reduces balance or acts correctly based on user ledger logic
             if (tx.type === 'Receivable') {
                 parties[matchedKey].balance += tx.total;
             } else if (tx.type === 'Payable') {
@@ -489,12 +486,10 @@ tailwind.config = {
 
         let partyArray = Object.values(parties);
 
-        // Search Filter
         if (searchQuery) {
             partyArray = partyArray.filter(p => p.name.toLowerCase().includes(searchQuery));
         }
 
-        // Sorting Parties
         if (sortOption === 'name') {
             partyArray.sort((a, b) => a.name.localeCompare(b.name));
         } else if (sortOption === 'balance_desc') {
@@ -534,7 +529,10 @@ tailwind.config = {
             let detailsHtml = `<div id="ledger-party-${pIdx}" class="hidden border-t border-slate-200 dark:border-slate-700/60 bg-white dark:bg-slate-900/50 p-2 space-y-2">`;
             
             detailsHtml += `
-                <div class="flex justify-end mb-1">
+                <div class="flex justify-end gap-2 mb-1">
+                    <button onclick="event.stopPropagation(); sendLedgerToWhatsApp('${partyData.name}')" class="bg-emerald-600 hover:bg-emerald-700 text-white px-2.5 py-1 rounded-lg text-[10px] font-semibold flex items-center gap-1">
+                        <i class="fa-brands fa-whatsapp"></i> WhatsApp
+                    </button>
                     <button onclick="event.stopPropagation(); printPartyPDF('${partyData.name}')" class="bg-slate-700 hover:bg-slate-800 text-white px-2.5 py-1 rounded-lg text-[10px] font-semibold flex items-center gap-1">
                         <i class="fa-solid fa-print"></i> PDF Print
                     </button>
@@ -588,6 +586,36 @@ tailwind.config = {
             ledger.classList.add('hidden');
             icon.classList.remove('rotate-90');
         }
+    }
+
+    // WHATSAPP SHARE FUNCTION
+    function sendLedgerToWhatsApp(partyName) {
+        let transactions = JSON.parse(localStorage.getItem('digital_notebook_transactions') || '[]');
+        let partyItems = transactions.filter(t => (t.party || '').toLowerCase() === partyName.toLowerCase());
+        
+        if (partyItems.length === 0) {
+            alert(currentLang === 'NEP' ? 'पठाउनको लागि कुनै डाटा छैन!' : 'No data to send!');
+            return;
+        }
+
+        let mobile = prompt(currentLang === 'NEP' ? 'कृपया ह्वाट्सएप मोबाइल नम्बर राख्नुहोस् (देशको कोड सहित, जस्तै नेपालको लागि 97798... वा भारतको लागि 9198...):' : 'Enter WhatsApp mobile number with country code (e.g., 97798... or 9198...):');
+        
+        if (!mobile) return;
+
+        let totalBalance = 0;
+        let message = `*Digital NoteBook Ledger Report*\n*Party:* ${partyName}\n------------------\n`;
+        
+        partyItems.forEach(i => {
+            totalBalance += i.total;
+            message += `📅 Date: ${i.date}\n📌 Type: ${i.type}\n💰 Total: Rs ${i.total.toFixed(2)}\n📝 Note: ${i.note || '-'}\n------------------\n`;
+        });
+
+        message += `*Net Balance: Rs ${totalBalance.toFixed(2)}*\n धन्यवाद!`;
+
+        let encodedMessage = encodeURIComponent(message);
+        let whatsappUrl = `https://wa.me/${mobile}?text=${encodedMessage}`;
+        
+        window.open(whatsappUrl, '_blank');
     }
 
     function printPartyPDF(partyName) {
