@@ -76,52 +76,6 @@ tailwind.config = {
 </head>
 <body class="bg-slate-100 dark:bg-slate-950 text-slate-800 dark:text-slate-100 text-xs font-sans">
 
-<!-- MANDATORY SECURITY LOCK SCREEN (BEFORE DASHBOARD) -->
-<div id="security-lock-screen" class="fixed inset-0 bg-slate-950 z-[100] flex flex-col items-center justify-center p-4 hidden">
-    <div class="max-w-sm w-full bg-slate-900 border border-slate-800 p-6 rounded-3xl shadow-2xl space-y-6 text-white text-center">
-        <div class="w-16 h-16 mx-auto rounded-2xl bg-emerald-500/10 border border-emerald-500/30 flex items-center justify-center text-emerald-400 text-2xl">
-            🔒
-        </div>
-        <div class="space-y-1">
-            <h2 id="lock-title" class="text-base font-bold text-emerald-400">Enter Security PIN</h2>
-            <p id="lock-subtitle" class="text-xs text-slate-400">Enter your 6-digit PIN or use Biometric</p>
-        </div>
-
-        <!-- 6 Digit Dots Display -->
-        <div class="flex justify-center gap-3 py-2">
-            <div class="w-4 h-4 rounded-full border-2 border-emerald-500 bg-slate-800 pin-dot" id="dot-0"></div>
-            <div class="w-4 h-4 rounded-full border-2 border-emerald-500 bg-slate-800 pin-dot" id="dot-1"></div>
-            <div class="w-4 h-4 rounded-full border-2 border-emerald-500 bg-slate-800 pin-dot" id="dot-2"></div>
-            <div class="w-4 h-4 rounded-full border-2 border-emerald-500 bg-slate-800 pin-dot" id="dot-3"></div>
-            <div class="w-4 h-4 rounded-full border-2 border-emerald-500 bg-slate-800 pin-dot" id="dot-4"></div>
-            <div class="w-4 h-4 rounded-full border-2 border-emerald-500 bg-slate-800 pin-dot" id="dot-5"></div>
-        </div>
-
-        <!-- Biometric Button -->
-        <div id="biometric-container" class="hidden">
-            <button onclick="triggerBiometricAuth()" class="w-full py-3 bg-emerald-500/20 hover:bg-emerald-500/30 border border-emerald-500/40 rounded-xl font-bold text-xs text-emerald-300 flex items-center justify-center gap-2 transition">
-                <i class="fa-solid fa-fingerprint text-lg"></i> <span id="biometric-btn-text">Use Fingerprint / FaceID</span>
-            </button>
-        </div>
-
-        <!-- Numeric Keypad -->
-        <div class="grid grid-cols-3 gap-3 pt-2">
-            <button onclick="pressPinKey('1')" class="py-3 bg-slate-800 hover:bg-slate-700 rounded-xl font-bold text-sm transition">1</button>
-            <button onclick="pressPinKey('2')" class="py-3 bg-slate-800 hover:bg-slate-700 rounded-xl font-bold text-sm transition">2</button>
-            <button onclick="pressPinKey('3')" class="py-3 bg-slate-800 hover:bg-slate-700 rounded-xl font-bold text-sm transition">3</button>
-            <button onclick="pressPinKey('4')" class="py-3 bg-slate-800 hover:bg-slate-700 rounded-xl font-bold text-sm transition">4</button>
-            <button onclick="pressPinKey('5')" class="py-3 bg-slate-800 hover:bg-slate-700 rounded-xl font-bold text-sm transition">5</button>
-            <button onclick="pressPinKey('6')" class="py-3 bg-slate-800 hover:bg-slate-700 rounded-xl font-bold text-sm transition">6</button>
-            <button onclick="pressPinKey('7')" class="py-3 bg-slate-800 hover:bg-slate-700 rounded-xl font-bold text-sm transition">7</button>
-            <button onclick="pressPinKey('8')" class="py-3 bg-slate-800 hover:bg-slate-700 rounded-xl font-bold text-sm transition">8</button>
-            <button onclick="pressPinKey('9')" class="py-3 bg-slate-800 hover:bg-slate-700 rounded-xl font-bold text-sm transition">9</button>
-            <button onclick="clearPinKey()" class="py-3 bg-slate-800/50 hover:bg-slate-800 rounded-xl font-bold text-xs text-rose-400 transition">Clear</button>
-            <button onclick="pressPinKey('0')" class="py-3 bg-slate-800 hover:bg-slate-700 rounded-xl font-bold text-sm transition">0</button>
-            <button onclick="deletePinKey()" class="py-3 bg-slate-800/50 hover:bg-slate-800 rounded-xl font-bold text-xs text-slate-300 transition">⌫</button>
-        </div>
-    </div>
-</div>
-
 <!-- LANGUAGE SELECTION MODAL -->
 <div id="language-modal" class="fixed inset-0 z-50 bg-black/80 backdrop-blur-sm flex items-center justify-center transition-opacity duration-300 hidden">
     <div class="bg-slate-900 border border-emerald-500/40 rounded-2xl p-6 w-80 text-center shadow-2xl space-y-5">
@@ -314,12 +268,22 @@ tailwind.config = {
                     <h2 id="dynamic-greeting" class="text-base md:text-lg font-bold text-slate-800 dark:text-white tracking-tight"></h2>
                     <p class="text-xs text-slate-500 dark:text-slate-400 mt-0.5"><span class="lang-text" data-en="Here is what is happening with your money today." data-np="आज तपाईंको पैसाको स्थिति यहाँ छ।">Here is what is happening with your money today.</span></p>
                 </div>
-                <a href="qrscan.html" class="bg-white dark:bg-slate-900 p-1.5 rounded-lg border border-slate-200 dark:border-slate-800 shadow-sm flex flex-col items-center shrink-0 hover:border-emerald-500 transition">
-                    <div class="w-12 h-12 bg-white flex items-center justify-center p-0.5 rounded">
-                        <img src="N1024.png" alt="QR Code" class="w-full h-full object-contain" onerror="this.src='https://via.placeholder.com/150'">
-                    </div>
-                    <span class="text-[9px] text-slate-400 mt-0.5 font-medium"><span class="lang-text" data-en="QR Scan" data-np="क्यूआर स्क्यान">QR Scan</span></span>
-                </a>
+                <div class="flex items-center gap-2">
+                    <!-- pwaqrcode.html link -->
+                    <a href="pwaqrcode.html" class="bg-white dark:bg-slate-900 p-1.5 rounded-lg border border-slate-200 dark:border-slate-800 shadow-sm flex flex-col items-center shrink-0 hover:border-emerald-500 transition" title="PWA QR">
+                        <div class="w-10 h-10 bg-white flex items-center justify-center p-0.5 rounded">
+                            <img src="N1024.png" alt="PWA QR" class="w-full h-full object-contain" onerror="this.src='https://via.placeholder.com/150'">
+                        </div>
+                        <span class="text-[8px] text-slate-400 mt-0.5 font-medium">PWA QR</span>
+                    </a>
+                    <!-- apkqrcode.html link -->
+                    <a href="apkqrcode.html" class="bg-white dark:bg-slate-900 p-1.5 rounded-lg border border-slate-200 dark:border-slate-800 shadow-sm flex flex-col items-center shrink-0 hover:border-emerald-500 transition" title="APK QR">
+                        <div class="w-10 h-10 bg-white flex items-center justify-center p-0.5 rounded">
+                            <img src="N1024.png" alt="APK QR" class="w-full h-full object-contain" onerror="this.src='https://via.placeholder.com/150'">
+                        </div>
+                        <span class="text-[8px] text-slate-400 mt-0.5 font-medium">APK QR</span>
+                    </a>
+                </div>
             </div>
 
             <!-- ROW 1: Financial Summaries -->
@@ -474,125 +438,6 @@ tailwind.config = {
             toast.classList.add('opacity-0', 'pointer-events-none');
         }, 2000);
     }
-
-    let currentEnteredPin = "";
-    
-    function checkSecurityLock() {
-        const savedPin = localStorage.getItem('app_pin_lock');
-        const lockScreen = document.getElementById('security-lock-screen');
-        if (savedPin && savedPin.length === 6) {
-            lockScreen.classList.remove('hidden');
-            const biometricEnabled = localStorage.getItem('biometric_enabled') === 'true';
-            if (biometricEnabled && window.PublicKeyCredential) {
-                document.getElementById('biometric-container').classList.remove('hidden');
-                setTimeout(() => {
-                    triggerBiometricAuth();
-                }, 500);
-            } else {
-                document.getElementById('biometric-container').classList.add('hidden');
-            }
-        } else {
-            lockScreen.classList.add('hidden');
-        }
-    }
-
-    window.pressPinKey = function(digit) {
-        if (currentEnteredPin.length < 6) {
-            currentEnteredPin += digit;
-            updatePinDots();
-            if (currentEnteredPin.length === 6) {
-                verifyEnteredPin();
-            }
-        }
-    }
-
-    window.deletePinKey = function() {
-        if (currentEnteredPin.length > 0) {
-            currentEnteredPin = currentEnteredPin.slice(0, -1);
-            updatePinDots();
-        }
-    }
-
-    window.clearPinKey = function() {
-        currentEnteredPin = "";
-        updatePinDots();
-    }
-
-    function updatePinDots() {
-        for (let i = 0; i < 6; i++) {
-            const dot = document.getElementById(`dot-${i}`);
-            if (i < currentEnteredPin.length) {
-                dot.classList.add('bg-emerald-500');
-                dot.classList.remove('bg-slate-800');
-            } else {
-                dot.classList.remove('bg-emerald-500');
-                dot.classList.add('bg-slate-800');
-            }
-        }
-    }
-
-    function verifyEnteredPin() {
-        const savedPin = localStorage.getItem('app_pin_lock');
-        if (currentEnteredPin === savedPin) {
-            showToast("Unlocked successfully!");
-            document.getElementById('security-lock-screen').classList.add('hidden');
-            currentEnteredPin = "";
-            updatePinDots();
-        } else {
-            showToast("Incorrect PIN. Try again.");
-            currentEnteredPin = "";
-            updatePinDots();
-        }
-    }
-
-    window.triggerBiometricAuth = async function() {
-        try {
-            if (window.PublicKeyCredential && PublicKeyCredential.isUserVerifyingPlatformAuthenticatorAvailable) {
-                const available = await PublicKeyCredential.isUserVerifyingPlatformAuthenticatorAvailable();
-                if (available) {
-                    const publicKey = {
-                        challenge: new Uint8Array(32),
-                        rp: { name: "Digital NoteBook" },
-                        user: {
-                            id: new Uint8Array(16),
-                            name: "user@notebook.com",
-                            displayName: "Notebook User"
-                        },
-                        pubKeyCredParams: [{ alg: -7, type: "public-key" }],
-                        timeout: 60000,
-                        authenticatorSelection: { authenticatorAttachment: "platform", userVerification: "required" },
-                        attestation: "none"
-                    };
-                    await navigator.credentials.create({ publicKey });
-                    showToast("Biometric Verified Successfully!");
-                    document.getElementById('security-lock-screen').classList.add('hidden');
-                    return;
-                }
-            }
-            const credential = await navigator.credentials.get({
-                publicKey: {
-                    challenge: new Uint8Array(32),
-                    timeout: 60000,
-                    userVerification: "required"
-                }
-            }).catch(() => null);
-
-            if (credential) {
-                showToast("Biometric Verified Successfully!");
-                document.getElementById('security-lock-screen').classList.add('hidden');
-            } else {
-                showToast("Please use your 6-digit PIN.");
-            }
-        } catch (error) {
-            showToast("Please enter your 6-digit PIN.");
-        }
-    }
-
-    document.addEventListener("visibilitychange", () => {
-        if (!document.hidden) {
-            checkSecurityLock();
-        }
-    });
 
     const translations = {
         en: {
@@ -841,7 +686,6 @@ tailwind.config = {
         loadUserData();
         loadAvatar();
         updateSummaryCards();
-        checkSecurityLock();
 
         const text = "DIGITAL NOTEBOOK";
         const typingElement = document.getElementById("typing-title");
