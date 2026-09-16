@@ -1,0 +1,131 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Install App</title>
+    <style>
+        body {
+            margin: 0;
+            padding: 0;
+            background-color: #f9f9f9;
+            font-family: Arial, sans-serif;
+            display: flex;
+            justify-content: center;
+            align-items: center;
+            height: 100vh;
+            text-align: center;
+        }
+        .container {
+            background: #ffffff;
+            padding: 30px;
+            border-radius: 12px;
+            box-shadow: 0 4px 15px rgba(0,0,0,0.1);
+            max-width: 320px;
+            width: 90%;
+        }
+        .avatar-container {
+            position: relative;
+            width: 100px;
+            height: 100px;
+            margin: 0 auto 20px auto;
+        }
+        .avatar {
+            width: 100px;
+            height: 100px;
+            border-radius: 50%;
+            object-fit: cover;
+            border: 3px solid #4CAF50;
+        }
+        h2 {
+            font-size: 20px;
+            color: #333;
+            margin-bottom: 10px;
+        }
+        p {
+            font-size: 14px;
+            color: #666;
+            margin-bottom: 20px;
+        }
+        .btn {
+            display: inline-block;
+            background: #4CAF50;
+            color: white;
+            padding: 12px 20px;
+            text-decoration: none;
+            border-radius: 6px;
+            font-size: 16px;
+            font-weight: bold;
+            box-shadow: 0 2px 5px rgba(0,0,0,0.2);
+            border: none;
+            cursor: pointer;
+            width: 100%;
+        }
+        .btn:hover {
+            background: #45a049;
+        }
+        #install-section {
+            display: none;
+        }
+    </style>
+</head>
+<body>
+
+    <div class="container">
+        <!-- रुट फोल्डरबाट फोटो (avatar.jpg) देखाउने भाग -->
+        <div class="avatar-container">
+            <img src="avatar.jpg" alt="App Logo" class="avatar">
+        </div>
+        
+        <h2>Install Our App</h2>
+        <p id="msg">Loading application...</p>
+        
+        <!-- PWA इन्स्टल गर्ने बटन (सपोर्ट नगरेको browser को लागि म्यानुअल तरिका देखाउने) -->
+        <div id="install-section">
+            <button id="install-btn" class="btn">Add to Home Screen</button>
+        </div>
+        
+        <div id="manual-instructions" style="display: none; font-size: 13px; color: #555; margin-top: 15px; text-align: left;">
+            <b>How to install manually:</b><br>
+            • Chrome: Tap the menu (⋮) and select <b>"Install app"</b> or <b>"Add to Home screen"</b>.<br>
+            • Safari: Tap the Share button (⎋) and select <b>"Add to Home Screen"</b>.
+        </div>
+    </div>
+
+    <script>
+        let deferredPrompt;
+        const installBtn = document.getElementById('install-btn');
+        const installSection = document.getElementById('install-section');
+        const manualInstructions = document.getElementById('manual-instructions');
+        const msg = document.getElementById('msg');
+
+        window.addEventListener('beforeinstallprompt', (e) => {
+            e.preventDefault();
+            deferredPrompt = e;
+            installSection.style.display = 'block';
+            msg.innerText = 'Click the button below to install the app on your device:';
+        });
+
+        installBtn.addEventListener('click', async () => {
+            if (deferredPrompt) {
+                deferredPrompt.prompt();
+                const { outcome } = await deferredPrompt.userChoice;
+                if (outcome === 'accepted') {
+                    console.log('User accepted the install prompt');
+                }
+                deferredPrompt = null;
+                installSection.style.display = 'none';
+            }
+        });
+
+        // यदि browser ले अटोमेटिक इन्स्टल प्रम्प्ट सपोर्ट गर्दैन भने म्यानुअल गाइड देखाउने
+        setTimeout(() => {
+            if (installSection.style.display === 'none') {
+                msg.innerText = 'Follow the browser menu to install this app:';
+                manualInstructions.style.display = 'block';
+            }
+        }, 2000);
+    </script>
+
+</body>
+</html>
