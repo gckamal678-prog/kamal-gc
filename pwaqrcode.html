@@ -3,117 +3,97 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>Install App - dn.kamalgc.com.np</title>
-    <style>
-        * { box-sizing: border-box; }
-        body {
-            margin: 0;
-            padding: 20px;
-            background-color: #f0f2f5;
-            font-family: -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, Helvetica, Arial, sans-serif;
-            display: flex;
-            justify-content: center;
-            align-items: center;
-            min-height: 100vh;
-        }
-        .card {
-            background: #ffffff;
-            padding: 30px 20px;
-            border-radius: 20px;
-            box-shadow: 0 10px 30px rgba(0,0,0,0.1);
-            max-width: 360px;
-            width: 100%;
-            text-align: center;
-        }
-        /* स्थायी QR Box डिजाइन र बीचमा लोगो राख्ने मिलाइएको */
-        .qr-box {
-            width: 180px;
-            height: 180px;
-            margin: 0 auto 15px auto;
-            border-radius: 12px;
-            padding: 10px;
-            background: #ffffff;
-            border: 1px solid #e5e7eb;
-            position: relative;
-            display: flex;
-            justify-content: center;
-            align-items: center;
-        }
-        .qr-box img.qr-img {
-            width: 100%;
-            height: 100%;
-            object-fit: contain;
-        }
-        /* QR को बीचमा बस्ने N512.png लोगोको स्टाइल */
-        .qr-box img.center-logo {
-            position: absolute;
-            width: 40px;
-            height: 40px;
-            object-fit: contain;
-            border-radius: 50%;
-            background: white;
-            padding: 2px;
-            box-shadow: 0 2px 5px rgba(0,0,0,0.2);
-        }
-        h1 {
-            font-size: 20px;
-            color: #1f2937;
-            margin: 0 0 8px 0;
-        }
-        p {
-            font-size: 13px;
-            color: #4b5563;
-            line-height: 1.4;
-            margin: 0 0 20px 0;
-        }
-        .btn {
-            display: block;
-            width: 100%;
-            text-decoration: none;
-            padding: 12px 20px;
-            border-radius: 12px;
-            font-size: 15px;
-            font-weight: bold;
-            margin-bottom: 10px;
-            box-shadow: 0 4px 12px rgba(0,0,0,0.08);
-        }
-        .btn-install {
-            background-color: #0056b3;
-            color: white;
-        }
-        .btn-whatsapp {
-            background-color: #25D366;
-            color: white;
-        }
-        .footer-note {
-            margin-top: 15px;
-            font-size: 11px;
-            color: #9ca3af;
-        }
-    </style>
+    <title>Install Me - PWA App</title>
+    
+    <!-- PWA Manifest Link -->
+    <link rel="manifest" href="manifest.json">
+    <meta name="theme-color" content="#059669">
+
+    <!-- Tailwind CSS -->
+    <script src="https://cdn.tailwindcss.com"></script>
+    <!-- QRCode.js Library -->
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/qrcodejs/1.0.0/qrcode.min.js"></script>
 </head>
-<body>
+<body class="bg-slate-950 text-slate-100 flex items-center justify-center min-h-screen p-4">
 
-    <div class="card">
-        <!-- स्थायी QR Code र बीचमा N512.png राख्ने सेक्सन -->
-        <div class="qr-box">
-            <!-- स्थायी रूपमा dn.kamalgc.com.np को QR जेनेरेट गर्ने लिंक -->
-            <img class="qr-img" src="https://api.qrserver.com/v1/create-qr-code/?size=180x180&data=https://dn.kamalgc.com.np" alt="Permanent QR Code">
-            <!-- रुटमा रहेको N512.png फोटो QR को ठ ακै बीचमा राखिएको -->
-            <img class="center-logo" src="N512.png" alt="Logo">
+    <div class="bg-slate-900 border border-slate-800 rounded-2xl p-6 shadow-lg max-w-sm w-full flex flex-col items-center text-center space-y-4">
+        
+        <!-- QR Code Wrapper with Center Logo -->
+        <div id="qrcodeWrapper" class="relative inline-block p-3 bg-white rounded-xl shadow-inner">
+            <div id="qrcode" class="flex justify-center items-center"></div>
+            <div class="absolute inset-0 flex items-center justify-center pointer-events-none">
+                <div class="w-9 h-9 rounded-full bg-white border-2 border-emerald-600 p-0.5 shadow-md overflow-hidden flex items-center justify-center">
+                    <img src="N1024.png" alt="Logo" class="w-full h-full object-cover rounded-full">
+                </div>
+            </div>
         </div>
-        
-        <h1>Install Our App</h1>
-        <p>Scan this QR code or tap the button below to install the app on your phone.</p>
-        
-        <!-- Open & Install PWA Button -->
-        <a href="https://dn.kamalgc.com.np" class="btn btn-install">Open & Install App</a>
-        
-        <!-- Share on WhatsApp Button -->
-        <a href="https://api.whatsapp.com/send?text=Hey!%20Click%20here%20to%20install%20our%20app%20instantly:%20https://dn.kamalgc.com.np" class="btn btn-whatsapp" target="_blank">Share on WhatsApp</a>
 
-        <div class="footer-note">dn.kamalgc.com.np</div>
+        <p class="text-[11px] text-slate-400">Scan this QR code or click below to <span class="text-emerald-500 font-bold">Install Me</span></p>
+
+        <!-- Install PWA Button -->
+        <button id="installBtn" class="w-full py-3 px-4 bg-blue-600 hover:bg-blue-700 text-white font-bold rounded-xl transition shadow-md flex items-center justify-center gap-2 text-xs">
+            <span>Install Me</span>
+        </button>
+
+        <!-- WhatsApp Share Button -->
+        <a href="https://api.whatsapp.com/send?text=Hey!%20Click%20here%20to%20install%20my%20app:%20https://dn.kamalgc.com.np" 
+           target="_blank" 
+           class="w-full py-3 px-4 bg-emerald-600 hover:bg-emerald-700 text-white font-bold rounded-xl transition shadow-md flex items-center justify-center gap-2 text-xs">
+            <span>Share on WhatsApp</span>
+        </a>
+
     </div>
+
+    <script>
+        // स्थायी QR Code dn.kamalgc.com.np को लागि
+        const appUrl = "https://dn.kamalgc.com.np";
+
+        window.onload = function() {
+            const qrcodeContainer = document.getElementById('qrcode');
+            if (qrcodeContainer && typeof QRCode !== 'undefined') {
+                qrcodeContainer.innerHTML = "";
+                new QRCode(qrcodeContainer, {
+                    text: appUrl,
+                    width: 160,
+                    height: 160,
+                    colorDark: "#000000",
+                    colorLight: "#ffffff",
+                    correctLevel: QRCode.CorrectLevel.H
+                });
+            }
+        };
+
+        // PWA Install Prompt Logic
+        let deferredPrompt;
+        const installBtn = document.getElementById('installBtn');
+
+        window.addEventListener('beforeinstallprompt', (e) => {
+            e.preventDefault();
+            deferredPrompt = e;
+            installBtn.style.display = 'flex';
+        });
+
+        installBtn.addEventListener('click', async () => {
+            if (deferredPrompt) {
+                deferredPrompt.prompt();
+                const { outcome } = await deferredPrompt.userChoice;
+                if (outcome === 'accepted') {
+                    console.log('User accepted the install prompt');
+                }
+                deferredPrompt = null;
+                installBtn.style.display = 'none';
+            } else {
+                alert("This app is either already installed or your browser doesn't support direct installation from this button.");
+            }
+        });
+
+        // Service Worker दर्ता गर्ने (PWA को लागि अनिवार्य)
+        if ('serviceWorker' in navigator) {
+            navigator.serviceWorker.register('sw.js')
+                .then(() => console.log('Service Worker Registered'))
+                .catch((err) => console.log('Service Worker Failed', err));
+        }
+    </script>
 
 </body>
 </html>
