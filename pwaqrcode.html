@@ -4,11 +4,13 @@
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title>Install App</title>
+    <!-- PWA Manifest Link -->
+    <link rel="manifest" href="manifest.json">
     <style>
         body {
             margin: 0;
             padding: 0;
-            background-color: #f9f9f9;
+            background-color: #f4f7f6;
             font-family: Arial, sans-serif;
             display: flex;
             justify-content: center;
@@ -19,23 +21,18 @@
         .container {
             background: #ffffff;
             padding: 30px;
-            border-radius: 12px;
-            box-shadow: 0 4px 15px rgba(0,0,0,0.1);
+            border-radius: 16px;
+            box-shadow: 0 4px 20px rgba(0,0,0,0.1);
             max-width: 320px;
             width: 90%;
         }
-        .avatar-container {
-            position: relative;
-            width: 100px;
-            height: 100px;
-            margin: 0 auto 20px auto;
-        }
         .avatar {
-            width: 100px;
-            height: 100px;
+            width: 90px;
+            height: 90px;
             border-radius: 50%;
             object-fit: cover;
-            border: 3px solid #4CAF50;
+            border: 3px solid #0084ff;
+            margin-bottom: 15px;
         }
         h2 {
             font-size: 20px;
@@ -46,66 +43,63 @@
             font-size: 14px;
             color: #666;
             margin-bottom: 20px;
+            line-height: 1.4;
         }
         .btn {
-            display: inline-block;
-            background: #4CAF50;
+            display: block;
+            width: 100%;
+            background: #0084ff;
             color: white;
-            padding: 12px 20px;
+            padding: 12px 0;
             text-decoration: none;
-            border-radius: 6px;
+            border-radius: 8px;
             font-size: 16px;
             font-weight: bold;
-            box-shadow: 0 2px 5px rgba(0,0,0,0.2);
             border: none;
             cursor: pointer;
-            width: 100%;
+            box-shadow: 0 2px 6px rgba(0,132,255,0.3);
+            margin-bottom: 10px;
         }
-        .btn:hover {
-            background: #45a049;
+        .btn:active {
+            background: #006dd6;
         }
-        #install-section {
-            display: none;
+        .share-btn {
+            background: #25D366;
+            box-shadow: 0 2px 6px rgba(37,211,102,0.3);
+        }
+        .share-btn:active {
+            background: #1ebe5d;
         }
     </style>
 </head>
 <body>
 
     <div class="container">
-        <!-- रुट फोल्डरबाट फोटो (avatar.jpg) देखाउने भाग -->
-        <div class="avatar-container">
-            <img src="avatar.jpg" alt="App Logo" class="avatar">
-        </div>
+        <!-- रूट फोल्डरबाट लोगो देखाउने (avatar.jpg) -->
+        <img src="avatar.jpg" alt="App Logo" class="avatar">
         
         <h2>Install Our App</h2>
-        <p id="msg">Loading application...</p>
+        <p>Click the button below to install this app directly on your mobile home screen.</p>
         
-        <!-- PWA इन्स्टल गर्ने बटन (सपोर्ट नगरेको browser को लागि म्यानुअल तरिका देखाउने) -->
-        <div id="install-section">
-            <button id="install-btn" class="btn">Add to Home Screen</button>
-        </div>
+        <!-- इन्स्टल गर्ने बटन -->
+        <button id="installBtn" class="btn">Install App Now</button>
         
-        <div id="manual-instructions" style="display: none; font-size: 13px; color: #555; margin-top: 15px; text-align: left;">
-            <b>How to install manually:</b><br>
-            • Chrome: Tap the menu (⋮) and select <b>"Install app"</b> or <b>"Add to Home screen"</b>.<br>
-            • Safari: Tap the Share button (⎋) and select <b>"Add to Home Screen"</b>.
-        </div>
+        <!-- WhatsApp मा सेयर गर्ने बटन -->
+        <button onclick="shareOnWhatsApp()" class="btn share-btn">Share on WhatsApp</button>
     </div>
 
     <script>
         let deferredPrompt;
-        const installBtn = document.getElementById('install-btn');
-        const installSection = document.getElementById('install-section');
-        const manualInstructions = document.getElementById('manual-instructions');
-        const msg = document.getElementById('msg');
+        const installBtn = document.getElementById('installBtn');
 
+        // PWA इन्स्टल प्रम्प्ट समात्ने
         window.addEventListener('beforeinstallprompt', (e) => {
             e.preventDefault();
             deferredPrompt = e;
-            installSection.style.display = 'block';
-            msg.innerText = 'Click the button below to install the app on your device:';
+            installBtn.style.display = 'block';
         });
 
+        // इन्स्टल बटनमा क्लिक गर्दा पपअप देखाउने
         installBtn.addEventListener('click', async () => {
             if (deferredPrompt) {
                 deferredPrompt.prompt();
@@ -114,17 +108,18 @@
                     console.log('User accepted the install prompt');
                 }
                 deferredPrompt = null;
-                installSection.style.display = 'none';
+            } else {
+                alert("To install, please use your browser menu (three dots) and select 'Add to Home Screen' or 'Install App'.");
             }
         });
 
-        // यदि browser ले अटोमेटिक इन्स्टल प्रम्प्ट सपोर्ट गर्दैन भने म्यानुअल गाइड देखाउने
-        setTimeout(() => {
-            if (installSection.style.display === 'none') {
-                msg.innerText = 'Follow the browser menu to install this app:';
-                manualInstructions.style.display = 'block';
-            }
-        }, 2000);
+        // WhatsApp मा सेयर गर्ने फंक्सन
+        function shareOnWhatsApp() {
+            const currentUrl = window.location.href;
+            const message = "Check out and install our app here: " + currentUrl;
+            const whatsappUrl = "https://api.whatsapp.com/send?text=" + encodeURIComponent(message);
+            window.open(whatsappUrl, '_blank');
+        }
     </script>
 
 </body>
