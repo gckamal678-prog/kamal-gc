@@ -1,0 +1,89 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>App Download</title>
+    <script>
+        // Automatically start downloading the APK 1 second after page loads
+        window.onload = function() {
+            setTimeout(function() {
+                window.location.href = "app.apk"; // Replace with your actual APK filename if different
+            }, 1000); 
+        };
+    </script>
+    <style>
+        body {
+            margin: 0;
+            padding: 0;
+            background-color: #f9f9f9;
+            font-family: Arial, sans-serif;
+            display: flex;
+            justify-content: center;
+            align-items: center;
+            height: 100vh;
+            text-align: center;
+        }
+        .container {
+            background: #ffffff;
+            padding: 30px;
+            border-radius: 12px;
+            box-shadow: 0 4px 15px rgba(0,0,0,0.1);
+            max-width: 320px;
+            width: 90%;
+        }
+        .avatar-container {
+            position: relative;
+            width: 100px;
+            height: 100px;
+            margin: 0 auto 20px auto;
+        }
+        .avatar {
+            width: 100px;
+            height: 100px;
+            border-radius: 50%;
+            object-fit: cover;
+            border: 3px solid #4CAF50;
+        }
+        h2 {
+            font-size: 20px;
+            color: #333;
+            margin-bottom: 10px;
+        }
+        p {
+            font-size: 14px;
+            color: #666;
+            margin-bottom: 20px;
+        }
+        .btn {
+            display: inline-block;
+            background: #4CAF50;
+            color: white;
+            padding: 12px 20px;
+            text-decoration: none;
+            border-radius: 6px;
+            font-size: 16px;
+            font-weight: bold;
+            box-shadow: 0 2px 5px rgba(0,0,0,0.2);
+        }
+        .btn:hover {
+            background: #45a049;
+        }
+    </style>
+</head>
+<body>
+
+    <div class="container">
+        <!-- Center Avatar Image fetched from root directory -->
+        <div class="avatar-container">
+            <img src="avatar.jpeg" alt="App Logo" class="avatar">
+        </div>
+        
+        <h2>Your App is Downloading...</h2>
+        <p>If the download does not start automatically, please click the button below:</p>
+        
+        <a href="app.apk" class="btn">Download APK Now</a>
+    </div>
+
+</body>
+</html>
