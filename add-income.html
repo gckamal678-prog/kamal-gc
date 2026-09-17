@@ -510,7 +510,7 @@ tailwind.config = {
         }
     }
 
-    // PDF प्रिन्ट गर्ने फंक्सन (दोहोरो नाम हटाइएको र फोटोमुनि मात्र ठूलो नाम राखिएको)
+    // PDF प्रिन्ट गर्ने फंक्सन (दायाँपट्टिको दोहोरो नाम पूर्ण रूपमा हटाइएको)
     function printIncomePDF() {
         let incomes = JSON.parse(localStorage.getItem('digital_notebook_incomes') || '[]');
         if(incomes.length === 0) {
@@ -559,11 +559,11 @@ tailwind.config = {
                 }
                 .profile-area {
                     text-align: left;
-                    width: 160px;
+                    width: 180px;
                 }
                 .profile-avatar-container {
-                    width: 90px;
-                    height: 90px;
+                    width: 80px;
+                    height: 80px;
                     border-radius: 50%;
                     overflow: hidden;
                     border: 3px solid #16a34a;
@@ -578,13 +578,12 @@ tailwind.config = {
                     height: 100%;
                     object-fit: cover;
                 }
-                /* फोटो मुनिको नाम अलि ठूलो राखिएको र माथिल्लो दोहोरो नाम हटाइएको */
+                /* फोटो मुनिको नाम अलि ठूलो, दायाँपट्टिको दोहोरो नाम हटाइयो */
                 .company-name-large {
-                    font-size: 15px;
+                    font-size: 14px;
                     font-weight: 700;
                     color: #1f2937;
                     text-align: left;
-                    width: 100px;
                     line-height: 1.2;
                 }
                 .company-info {
@@ -659,7 +658,7 @@ tailwind.config = {
                             <div class="company-info">
                                 <div>📍 ठेगाना: <span>${profileAddress}</span></div>
                                 <div>📞 सम्पर्क: <span>${profileMobile}</span></div>
-                                <div>✉️ इमेल: <span>${profileEmail}</span></div>
+                                ${profileEmail ? `<div>✉️ इमेल: <span>${profileEmail}</span></div>` : ''}
                             </div>
                         </td>
                     </tr>
@@ -716,9 +715,9 @@ tailwind.config = {
         }, 500);
     }
 
-    // सिधै PDF फाइल नै सेयर (Share PDF) गर्ने फंक्सन
+    // PDF सेयर वा फाइल डाउनलोड गर्ने सुधारिएको फंक्सन (Share / Download PDF)
     function shareIncomePDF() {
-        let incomes = JSON.parse(localStorage.getItem('digital_notebook_incomes'] || '[]');
+        let incomes = JSON.parse(localStorage.getItem('digital_notebook_incomes') || '[]');
         if(incomes.length === 0) {
             showToast('सेयर गर्न कुनै डाटा छैन!', 'error');
             return;
@@ -729,7 +728,6 @@ tailwind.config = {
         const profileMobile = localStorage.getItem('profile_mobile') || '';
         const profileAvatar = localStorage.getItem('profile_avatar') || 'N1024.png';
 
-        // Temporary container बनाएर PDF जेनेरेट गर्ने
         let element = document.createElement('div');
         element.style.padding = '30px';
         element.style.backgroundColor = '#ffffff';
@@ -743,7 +741,7 @@ tailwind.config = {
                     <div style="width: 80px; height: 80px; border-radius: 50%; overflow: hidden; border: 3px solid #16a34a; margin-bottom: 8px;">
                         <img src="${profileAvatar}" style="width: 100%; height: 100%; object-fit: cover;">
                     </div>
-                    <div style="font-size: 15px; font-weight: 700; color: #1f2937;">${profileName}</div>
+                    <div style="font-size: 14px; font-weight: 700; color: #1f2937;">${profileName}</div>
                 </div>
                 <div style="text-align: right; font-size: 13px; color: #555; line-height: 1.5;">
                     <div>📍 ठेगाना: ${profileAddress}</div>
@@ -799,21 +797,27 @@ tailwind.config = {
         html2pdf().from(element).outputPdf('blob').then((pdfBlob) => {
             let file = new File([pdfBlob], `Income_Report.pdf`, { type: 'application/pdf' });
             
+            // मोबाइलको वेब सेयर एपीआई परीक्षण गर्ने, यदि सपोर्ट गर्दैन भने वा एरर आएमा डाउनलोड गराउने
             if (navigator.canShare && navigator.canShare({ files: [file] })) {
                 navigator.share({
                     title: 'Income Report PDF',
                     text: 'Here is my Income Report.',
                     files: [file],
-                }).catch((error) => console.log('Sharing failed', error));
+                }).catch(() => {
+                    downloadPDFBlob(pdfBlob);
+                });
             } else {
-                // यदि डाइरेक्ट फाइल सेयर सपोर्ट गर्दैन भने डाउनलोड गराउने विकल्प
-                let link = document.createElement('a');
-                link.href = URL.createObjectURL(pdfBlob);
-                link.download = `Income_Report.pdf`;
-                link.click();
-                showToast('PDF डाउनलोड भयो!', 'success');
+                downloadPDFBlob(pdfBlob);
             }
         });
+    }
+
+    function downloadPDFBlob(blob) {
+        let link = document.createElement('a');
+        link.href = URL.createObjectURL(blob);
+        link.download = `Income_Report.pdf`;
+        link.click();
+        showToast('PDF सफलतापूर्वक डाउनलोड भयो!', 'success');
     }
 
     document.addEventListener("DOMContentLoaded", () => {
