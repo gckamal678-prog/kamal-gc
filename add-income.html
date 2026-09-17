@@ -92,6 +92,10 @@ tailwind.config = {
                     <label class="block text-[10px] font-semibold text-slate-400 mb-0.5"><span class="lang-text" data-en="Mobile Number" data-np="मोबाइल नम्बर">Mobile Number</span></label>
                     <input type="tel" id="input-mobile" placeholder="Enter Mobile Number" class="w-full bg-slate-800 border border-slate-700 rounded-lg px-2.5 py-2 text-white text-xs focus:outline-none focus:border-emerald-500">
                 </div>
+                <div>
+                    <label class="block text-[10px] font-semibold text-slate-400 mb-0.5"><span class="lang-text" data-en="Email Address" data-np="इमेल ठेगाना">Email Address</span></label>
+                    <input type="email" id="input-email" placeholder="Enter Email" class="w-full bg-slate-800 border border-slate-700 rounded-lg px-2.5 py-2 text-white text-xs focus:outline-none focus:border-emerald-500">
+                </div>
                 <button onclick="saveProfileDetails()" class="w-full py-2 bg-emerald-600 hover:bg-emerald-700 text-white font-bold rounded-lg transition shadow-md">
                     <span class="lang-text" data-en="Save Info" data-np="सेभ गर्नुहोस्">Save Info</span>
                 </button>
@@ -182,7 +186,6 @@ tailwind.config = {
                         <i class="fa-solid fa-list text-emerald-500"></i> <span class="lang-text" data-en="Grouped Income Ledger" data-np="समूहकृत आम्दानी खाता">Grouped Income Ledger</span>
                     </h3>
                     
-                    <!-- एउटै साझा PDF बटन (जसले प्रिन्ट र सेयर दुवै गर्न मिल्ने PDF देखाउँछ) -->
                     <div class="flex gap-2">
                         <button onclick="generateAndShareIncomePDF()" class="bg-emerald-600 hover:bg-emerald-700 text-white px-3.5 py-1.5 rounded-xl text-xs font-semibold flex items-center gap-1.5 shadow-md">
                             <i class="fa-solid fa-file-pdf"></i> Generate & View PDF
@@ -303,10 +306,12 @@ tailwind.config = {
         const savedName = localStorage.getItem('profile_name') || '';
         const savedAddress = localStorage.getItem('profile_address') || '';
         const savedMobile = localStorage.getItem('profile_mobile') || '';
+        const savedEmail = localStorage.getItem('profile_email') || '';
 
         if(document.getElementById('input-full-name')) document.getElementById('input-full-name').value = savedName;
         if(document.getElementById('input-address')) document.getElementById('input-address').value = savedAddress;
         if(document.getElementById('input-mobile')) document.getElementById('input-mobile').value = savedMobile;
+        if(document.getElementById('input-email')) document.getElementById('input-email').value = savedEmail;
 
         const nameEl = document.getElementById('sidebar-profile-name');
         if(nameEl) nameEl.innerText = savedName;
@@ -316,10 +321,12 @@ tailwind.config = {
         const name = document.getElementById('input-full-name').value;
         const address = document.getElementById('input-address').value;
         const mobile = document.getElementById('input-mobile').value;
+        const email = document.getElementById('input-email').value;
 
         if(name) localStorage.setItem('profile_name', name);
         localStorage.setItem('profile_address', address);
         localStorage.setItem('profile_mobile', mobile);
+        localStorage.setItem('profile_email', email);
 
         loadUserData();
         showToast(currentLang === 'NEP' ? 'विवरण सफलतापूर्वक सेभ भयो!' : 'Details saved successfully!', 'success');
@@ -532,7 +539,7 @@ tailwind.config = {
         }
     }
 
-    // PDF बनाउने र प्रिभ्यू देखाउने फंक्सन (Category स्तम्भसहित)
+    // PDF बनाउने र प्रिभ्यू देखाउने फंक्सन (Address, Contact, Email अंग्रेजीमा)
     function generateAndShareIncomePDF() {
         let incomes = JSON.parse(localStorage.getItem('digital_notebook_incomes') || '[]');
         if(incomes.length === 0) {
@@ -543,6 +550,7 @@ tailwind.config = {
         const profileName = localStorage.getItem('profile_name') || 'Digital NoteBook';
         const profileAddress = localStorage.getItem('profile_address') || '';
         const profileMobile = localStorage.getItem('profile_mobile') || '';
+        const profileEmail = localStorage.getItem('profile_email') || '';
         const profileAvatar = localStorage.getItem('profile_avatar') || 'N1024.png';
 
         let previewContainer = document.getElementById('pdf-preview-container');
@@ -558,8 +566,9 @@ tailwind.config = {
                         <div style="font-size: 13px; font-weight: 700; color: #1f2937;">${profileName}</div>
                     </td>
                     <td style="vertical-align: top; text-align: right; font-size: 12px; color: #555; line-height: 1.5;">
-                        <div>📍 ठेगाना: ${profileAddress}</div>
-                        <div>📞 सम्पर्क: ${profileMobile}</div>
+                        <div>📍 Address: ${profileAddress}</div>
+                        <div>📞 Contact: ${profileMobile}</div>
+                        <div>✉️ Email: ${profileEmail}</div>
                     </td>
                 </tr>
             </table>
@@ -598,7 +607,7 @@ tailwind.config = {
             </table>
 
             <div style="margin-top: 20px; text-align: right; font-size: 15px; font-weight: bold; color: #16a34a; border-top: 2px solid #16a34a; padding-top: 15px;">
-                कुल जम्मा (Grand Total): Rs ${grandTotal.toFixed(2)}
+                Grand Total: Rs ${grandTotal.toFixed(2)}
             </div>
             
             <div style="text-align: center; font-size: 10px; color: #9ca3af; margin-top: 30px; border-top: 1px solid #e5e7eb; padding-top: 10px;">
