@@ -90,10 +90,6 @@ tailwind.config = {
                     <label class="block text-[10px] font-semibold text-slate-400 mb-0.5"><span class="lang-text" data-en="Mobile Number" data-np="मोबाइल नम्बर">Mobile Number</span></label>
                     <input type="tel" id="input-mobile" placeholder="Enter Mobile Number" class="w-full bg-slate-800 border border-slate-700 rounded-lg px-2.5 py-2 text-white text-xs focus:outline-none focus:border-emerald-500">
                 </div>
-                <div>
-                    <label class="block text-[10px] font-semibold text-slate-400 mb-0.5"><span class="lang-text" data-en="Email" data-np="इमेल">Email</span></label>
-                    <input type="email" id="input-email" placeholder="Enter Email" class="w-full bg-slate-800 border border-slate-700 rounded-lg px-2.5 py-2 text-white text-xs focus:outline-none focus:border-emerald-500">
-                </div>
                 <button onclick="saveProfileDetails()" class="w-full py-2 bg-emerald-600 hover:bg-emerald-700 text-white font-bold rounded-lg transition shadow-md">
                     <span class="lang-text" data-en="Save Info" data-np="सेभ गर्नुहोस्">Save Info</span>
                 </button>
@@ -183,7 +179,16 @@ tailwind.config = {
                     <h3 class="font-bold text-sm text-slate-900 dark:text-white flex items-center gap-2">
                         <i class="fa-solid fa-list text-emerald-500"></i> <span class="lang-text" data-en="Grouped Income Ledger" data-np="समूहकृत आम्दानी खाता">Grouped Income Ledger</span>
                     </h3>
-                    <button onclick="printIncomePDF()" class="bg-slate-700 hover:bg-slate-800 text-white px-3 py-1.5 rounded-xl text-xs font-semibold flex items-center gap-1.5"><i class="fa-solid fa-print"></i> Print / PDF</button>
+                    
+                    <!-- Print र Share बटनहरू राखिएको ठाउँ -->
+                    <div class="flex gap-2">
+                        <button onclick="printIncomePDF()" class="bg-slate-700 hover:bg-slate-800 text-white px-3 py-1.5 rounded-xl text-xs font-semibold flex items-center gap-1.5">
+                            <i class="fa-solid fa-print"></i> Print / PDF
+                        </button>
+                        <button onclick="shareIncomePDF()" class="bg-emerald-600 hover:bg-emerald-700 text-white px-3 py-1.5 rounded-xl text-xs font-semibold flex items-center gap-1.5">
+                            <i class="fa-solid fa-share-nodes"></i> Share
+                        </button>
+                    </div>
                 </div>
 
                 <!-- SEARCH & SORT CONTROLS -->
@@ -274,12 +279,10 @@ tailwind.config = {
         const savedName = localStorage.getItem('profile_name') || '';
         const savedAddress = localStorage.getItem('profile_address') || '';
         const savedMobile = localStorage.getItem('profile_mobile') || '';
-        const savedEmail = localStorage.getItem('profile_email') || '';
 
         if(document.getElementById('input-full-name')) document.getElementById('input-full-name').value = savedName;
         if(document.getElementById('input-address')) document.getElementById('input-address').value = savedAddress;
         if(document.getElementById('input-mobile')) document.getElementById('input-mobile').value = savedMobile;
-        if(document.getElementById('input-email')) document.getElementById('input-email').value = savedEmail;
 
         const nameEl = document.getElementById('sidebar-profile-name');
         if(nameEl) nameEl.innerText = savedName;
@@ -289,12 +292,10 @@ tailwind.config = {
         const name = document.getElementById('input-full-name').value;
         const address = document.getElementById('input-address').value;
         const mobile = document.getElementById('input-mobile').value;
-        const email = document.getElementById('input-email').value;
 
         if(name) localStorage.setItem('profile_name', name);
         localStorage.setItem('profile_address', address);
         localStorage.setItem('profile_mobile', mobile);
-        localStorage.setItem('profile_email', email);
 
         loadUserData();
         showToast(currentLang === 'NEP' ? 'विवरण सफलतापूर्वक सेभ भयो!' : 'Details saved successfully!', 'success');
@@ -507,6 +508,7 @@ tailwind.config = {
         }
     }
 
+    // PDF / Print Function (गोलो फोटो र नामसहित)
     function printIncomePDF() {
         let incomes = JSON.parse(localStorage.getItem('digital_notebook_incomes') || '[]');
         if(incomes.length === 0) {
@@ -514,7 +516,7 @@ tailwind.config = {
             return;
         }
 
-        const profileName = localStorage.getItem('profile_name') || '';
+        const profileName = localStorage.getItem('profile_name') || 'Digital NoteBook';
         const profileAddress = localStorage.getItem('profile_address') || '';
         const profileMobile = localStorage.getItem('profile_mobile') || '';
         const profileEmail = localStorage.getItem('profile_email') || '';
@@ -525,79 +527,123 @@ tailwind.config = {
         let html = `
         <html>
         <head>
-            <title>Income Report</title>
+            <title>Income Report - ${profileName}</title>
             <style>
                 body {
-                    font-family: 'Helvetica Neue', Helvetica, Arial, sans-serif;
+                    font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
                     color: #333;
                     margin: 0;
-                    padding: 20px;
+                    padding: 0;
                     background-color: #f9f9f9;
                 }
                 .invoice-box {
                     max-width: 800px;
-                    margin: auto;
-                    padding: 30px;
-                    border: 1px solid #eee;
-                    box-shadow: 0 0 10px rgba(0, 0, 0, 0.15);
+                    margin: 20px auto;
+                    padding: 40px;
+                    border: 1px solid #ddd;
+                    box-shadow: 0 0 15px rgba(0, 0, 0, 0.1);
                     background-color: #fff;
-                    border-radius: 8px;
+                    border-radius: 12px;
                 }
                 .header-table {
                     width: 100%;
-                    border-bottom: 2px solid #0056b3;
-                    padding-bottom: 15px;
-                    margin-bottom: 20px;
+                    border-bottom: 2px solid #16a34a;
+                    padding-bottom: 20px;
+                    margin-bottom: 30px;
                     border-collapse: collapse;
                 }
                 .header-table td {
                     vertical-align: top;
                 }
+                .profile-area {
+                    text-align: left;
+                    width: 150px;
+                }
+                .profile-avatar-container {
+                    width: 100px;
+                    height: 100px;
+                    border-radius: 50%;
+                    overflow: hidden;
+                    border: 3px solid #16a34a;
+                    margin-bottom: 10px;
+                    display: flex;
+                    align-items: center;
+                    justify-content: center;
+                    background-color: #f3f4f6;
+                }
+                .profile-avatar-container img {
+                    width: 100%;
+                    height: 100%;
+                    object-fit: cover;
+                }
+                .company-name-large {
+                    font-size: 14px;
+                    font-weight: bold;
+                    color: #16a34a;
+                    text-align: center;
+                    width: 100px;
+                }
                 .company-info {
                     text-align: right;
                     font-size: 14px;
                     color: #555;
-                    line-height: 1.5;
+                    line-height: 1.6;
+                    padding-right: 10px;
                 }
                 .company-name {
-                    font-size: 22px;
+                    font-size: 24px;
                     font-weight: bold;
-                    color: #0056b3;
+                    color: #1f2937;
                     margin-bottom: 5px;
-                }
-                .logo-area img {
-                    max-height: 60px;
                 }
                 h2.report-title {
                     text-align: center;
-                    color: #333;
-                    margin-bottom: 25px;
+                    color: #1f2937;
+                    margin-bottom: 30px;
                     text-transform: uppercase;
-                    letter-spacing: 1px;
+                    letter-spacing: 2px;
+                    font-weight: 800;
+                    font-size: 20px;
                 }
                 table.data-table {
                     width: 100%;
                     border-collapse: collapse;
-                    margin-top: 10px;
+                    margin-top: 20px;
                 }
                 table.data-table th, table.data-table td {
-                    padding: 12px 15px;
+                    padding: 15px;
                     text-align: left;
-                    border-bottom: 1px solid #ddd;
+                    border-bottom: 1px solid #e5e7eb;
                 }
                 table.data-table th {
-                    background-color: #0056b3;
-                    color: white;
-                    font-weight: 600;
+                    background-color: #f3f4f6;
+                    color: #374151;
+                    font-weight: 700;
+                    text-transform: uppercase;
+                    font-size: 12px;
+                }
+                table.data-table tr:last-child td {
+                    border-bottom: none;
+                }
+                table.data-table tr:nth-child(2n) {
+                    background-color: #f9fafb;
                 }
                 .total-section {
-                    margin-top: 25px;
+                    margin-top: 30px;
                     text-align: right;
                     font-size: 18px;
                     font-weight: bold;
-                    color: #2c3e50;
-                    border-top: 2px solid #ddd;
+                    color: #16a34a;
+                    border-top: 2px solid #16a34a;
+                    padding-top: 20px;
+                }
+                .footer {
+                    text-align: center;
+                    font-size: 12px;
+                    color: #9ca3af;
+                    margin-top: 50px;
                     padding-top: 15px;
+                    border-top: 1px solid #e5e7eb;
                 }
             </style>
         </head>
@@ -605,10 +651,11 @@ tailwind.config = {
             <div class="invoice-box">
                 <table class="header-table">
                     <tr>
-                        <td>
-                            <div class="logo-area">
-                                <img src="${profileAvatar}" alt="Company Logo">
+                        <td class="profile-area">
+                            <div class="profile-avatar-container">
+                                <img src="${profileAvatar}" alt="Profile Avatar">
                             </div>
+                            <div class="company-name-large">${profileName}</div>
                         </td>
                         <td>
                             <div class="company-info">
@@ -655,7 +702,11 @@ tailwind.config = {
                 </table>
 
                 <div class="total-section">
-                    Total Income: Rs ${grandTotal.toFixed(2)}
+                    कुल जम्मा (Grand Total): Rs ${grandTotal.toFixed(2)}
+                </div>
+                
+                <div class="footer">
+                    Generated by Digital NoteBook | ${new Date().toLocaleDateString('en-NP')}
                 </div>
             </div>
         </body>
@@ -666,6 +717,37 @@ tailwind.config = {
         setTimeout(() => {
             printWindow.print();
         }, 500);
+    }
+
+    // Share Function (WhatsApp / Web Share API)
+    function shareIncomePDF() {
+        let incomes = JSON.parse(localStorage.getItem('digital_notebook_incomes') || '[]');
+        if(incomes.length === 0) {
+            showToast('सेयर गर्न कुनै डाटा छैन!', 'error');
+            return;
+        }
+
+        const profileName = localStorage.getItem('profile_name') || 'Digital NoteBook';
+        let grandTotal = 0;
+        
+        let reportText = `📊 *${profileName} - Income Report* 📊\n\n`;
+        
+        incomes.forEach((item, index) => {
+            grandTotal += item.total;
+            reportText += `${index + 1}. मिति: ${item.date}\n   शीर्षक: ${item.sourceName}\n   रकम: NPR ${item.npr} | INR ${item.inr}\n   जम्मा: Rs ${item.total.toFixed(2)}\n\n`;
+        });
+
+        reportText += `-------------------\n*कुल जम्मा आम्दानी (Grand Total):* Rs ${grandTotal.toFixed(2)}`;
+
+        if (navigator.share) {
+            navigator.share({
+                title: 'Income Report',
+                text: reportText,
+            }).catch((error) => console.log('Sharing failed', error));
+        } else {
+            const encodedText = encodeURIComponent(reportText);
+            window.open(`https://api.whatsapp.com/send?text=${encodedText}`, '_blank');
+        }
     }
 
     document.addEventListener("DOMContentLoaded", () => {
