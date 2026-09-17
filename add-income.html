@@ -4,6 +4,8 @@
 <meta charset="UTF-8">
 <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no">
 <title>Digital NoteBook - Income Sources</title>
+<!-- html2pdf library for direct PDF generation and sharing -->
+<script src="https://cdnjs.cloudflare.com/ajax/libs/html2pdf.js/0.10.1/html2pdf.bundle.min.js"></script>
 <script src="https://cdn.tailwindcss.com"></script>
 <script>
 tailwind.config = {
@@ -180,13 +182,13 @@ tailwind.config = {
                         <i class="fa-solid fa-list text-emerald-500"></i> <span class="lang-text" data-en="Grouped Income Ledger" data-np="समूहकृत आम्दानी खाता">Grouped Income Ledger</span>
                     </h3>
                     
-                    <!-- Print र Share बटनहरू राखिएको ठाउँ -->
+                    <!-- Print र Share PDF बटनहरू -->
                     <div class="flex gap-2">
                         <button onclick="printIncomePDF()" class="bg-slate-700 hover:bg-slate-800 text-white px-3 py-1.5 rounded-xl text-xs font-semibold flex items-center gap-1.5">
                             <i class="fa-solid fa-print"></i> Print / PDF
                         </button>
                         <button onclick="shareIncomePDF()" class="bg-emerald-600 hover:bg-emerald-700 text-white px-3 py-1.5 rounded-xl text-xs font-semibold flex items-center gap-1.5">
-                            <i class="fa-solid fa-share-nodes"></i> Share
+                            <i class="fa-solid fa-share-nodes"></i> Share PDF
                         </button>
                     </div>
                 </div>
@@ -508,7 +510,7 @@ tailwind.config = {
         }
     }
 
-    // PDF / Print Function (गोलो फोटो र नामसहित)
+    // PDF प्रिन्ट गर्ने फंक्सन (दोहोरो नाम हटाइएको र फोटोमुनि मात्र ठूलो नाम राखिएको)
     function printIncomePDF() {
         let incomes = JSON.parse(localStorage.getItem('digital_notebook_incomes') || '[]');
         if(incomes.length === 0) {
@@ -557,15 +559,15 @@ tailwind.config = {
                 }
                 .profile-area {
                     text-align: left;
-                    width: 150px;
+                    width: 160px;
                 }
                 .profile-avatar-container {
-                    width: 100px;
-                    height: 100px;
+                    width: 90px;
+                    height: 90px;
                     border-radius: 50%;
                     overflow: hidden;
                     border: 3px solid #16a34a;
-                    margin-bottom: 10px;
+                    margin-bottom: 8px;
                     display: flex;
                     align-items: center;
                     justify-content: center;
@@ -576,12 +578,14 @@ tailwind.config = {
                     height: 100%;
                     object-fit: cover;
                 }
+                /* फोटो मुनिको नाम अलि ठूलो राखिएको र माथिल्लो दोहोरो नाम हटाइएको */
                 .company-name-large {
-                    font-size: 14px;
-                    font-weight: bold;
-                    color: #16a34a;
-                    text-align: center;
+                    font-size: 15px;
+                    font-weight: 700;
+                    color: #1f2937;
+                    text-align: left;
                     width: 100px;
+                    line-height: 1.2;
                 }
                 .company-info {
                     text-align: right;
@@ -589,12 +593,6 @@ tailwind.config = {
                     color: #555;
                     line-height: 1.6;
                     padding-right: 10px;
-                }
-                .company-name {
-                    font-size: 24px;
-                    font-weight: bold;
-                    color: #1f2937;
-                    margin-bottom: 5px;
                 }
                 h2.report-title {
                     text-align: center;
@@ -659,7 +657,6 @@ tailwind.config = {
                         </td>
                         <td>
                             <div class="company-info">
-                                <div class="company-name">${profileName}</div>
                                 <div>📍 ठेगाना: <span>${profileAddress}</span></div>
                                 <div>📞 सम्पर्क: <span>${profileMobile}</span></div>
                                 <div>✉️ इमेल: <span>${profileEmail}</span></div>
@@ -719,35 +716,104 @@ tailwind.config = {
         }, 500);
     }
 
-    // Share Function (WhatsApp / Web Share API)
+    // सिधै PDF फाइल नै सेयर (Share PDF) गर्ने फंक्सन
     function shareIncomePDF() {
-        let incomes = JSON.parse(localStorage.getItem('digital_notebook_incomes') || '[]');
+        let incomes = JSON.parse(localStorage.getItem('digital_notebook_incomes'] || '[]');
         if(incomes.length === 0) {
             showToast('सेयर गर्न कुनै डाटा छैन!', 'error');
             return;
         }
 
         const profileName = localStorage.getItem('profile_name') || 'Digital NoteBook';
+        const profileAddress = localStorage.getItem('profile_address') || '';
+        const profileMobile = localStorage.getItem('profile_mobile') || '';
+        const profileAvatar = localStorage.getItem('profile_avatar') || 'N1024.png';
+
+        // Temporary container बनाएर PDF जेनेरेट गर्ने
+        let element = document.createElement('div');
+        element.style.padding = '30px';
+        element.style.backgroundColor = '#ffffff';
+        element.style.color = '#333333';
+        element.style.fontFamily = 'Poppins, sans-serif';
+        element.style.width = '750px';
+
+        let html = `
+            <div style="border-bottom: 2px solid #16a34a; padding-bottom: 15px; margin-bottom: 25px; display: flex; justify-content: space-between; align-items: flex-start;">
+                <div>
+                    <div style="width: 80px; height: 80px; border-radius: 50%; overflow: hidden; border: 3px solid #16a34a; margin-bottom: 8px;">
+                        <img src="${profileAvatar}" style="width: 100%; height: 100%; object-fit: cover;">
+                    </div>
+                    <div style="font-size: 15px; font-weight: 700; color: #1f2937;">${profileName}</div>
+                </div>
+                <div style="text-align: right; font-size: 13px; color: #555; line-height: 1.5;">
+                    <div>📍 ठेगाना: ${profileAddress}</div>
+                    <div>📞 सम्पर्क: ${profileMobile}</div>
+                </div>
+            </div>
+            <h2 style="text-align: center; color: #1f2937; margin-bottom: 25px; text-transform: uppercase; font-size: 18px; font-weight: 800;">Income Report</h2>
+            <table style="width: 100%; border-collapse: collapse; margin-top: 10px; font-size: 12px;">
+                <thead>
+                    <tr style="background-color: #f3f4f6; color: #374151;">
+                        <th style="padding: 10px; text-align: left;">Date</th>
+                        <th style="padding: 10px; text-align: left;">Title</th>
+                        <th style="padding: 10px; text-align: left;">NPR</th>
+                        <th style="padding: 10px; text-align: left;">INR</th>
+                        <th style="padding: 10px; text-align: left;">Total (NPR)</th>
+                    </tr>
+                </thead>
+                <tbody>
+        `;
+
         let grandTotal = 0;
-        
-        let reportText = `📊 *${profileName} - Income Report* 📊\n\n`;
-        
-        incomes.forEach((item, index) => {
+        incomes.forEach(item => {
             grandTotal += item.total;
-            reportText += `${index + 1}. मिति: ${item.date}\n   शीर्षक: ${item.sourceName}\n   रकम: NPR ${item.npr} | INR ${item.inr}\n   जम्मा: Rs ${item.total.toFixed(2)}\n\n`;
+            html += `
+                <tr style="border-bottom: 1px solid #e5e7eb;">
+                    <td style="padding: 10px;">${item.date}</td>
+                    <td style="padding: 10px;">${item.sourceName}</td>
+                    <td style="padding: 10px;">${item.npr}</td>
+                    <td style="padding: 10px;">${item.inr}</td>
+                    <td style="padding: 10px; font-weight: bold; color: #16a34a;">Rs ${item.total.toFixed(2)}</td>
+                </tr>
+            `;
         });
 
-        reportText += `-------------------\n*कुल जम्मा आम्दानी (Grand Total):* Rs ${grandTotal.toFixed(2)}`;
+        html += `
+                </tbody>
+            </table>
+            <div style="margin-top: 25px; text-align: right; font-size: 16px; font-weight: bold; color: #16a34a; border-top: 2px solid #16a34a; padding-top: 15px;">
+                कुल जम्मा (Grand Total): Rs ${grandTotal.toFixed(2)}
+            </div>
+        `;
 
-        if (navigator.share) {
-            navigator.share({
-                title: 'Income Report',
-                text: reportText,
-            }).catch((error) => console.log('Sharing failed', error));
-        } else {
-            const encodedText = encodeURIComponent(reportText);
-            window.open(`https://api.whatsapp.com/send?text=${encodedText}`, '_blank');
-        }
+        element.innerHTML = html;
+
+        let opt = {
+            margin:       0.5,
+            filename:     `Income_Report_${profileName.replace(/\s+/g, '_')}.pdf`,
+            image:        { type: 'jpeg', quality: 0.98 },
+            html2canvas:  { scale: 2, useCORS: true },
+            jsPDF:        { unit: 'in', format: 'a4', orientation: 'portrait' }
+        };
+
+        html2pdf().from(element).outputPdf('blob').then((pdfBlob) => {
+            let file = new File([pdfBlob], `Income_Report.pdf`, { type: 'application/pdf' });
+            
+            if (navigator.canShare && navigator.canShare({ files: [file] })) {
+                navigator.share({
+                    title: 'Income Report PDF',
+                    text: 'Here is my Income Report.',
+                    files: [file],
+                }).catch((error) => console.log('Sharing failed', error));
+            } else {
+                // यदि डाइरेक्ट फाइल सेयर सपोर्ट गर्दैन भने डाउनलोड गराउने विकल्प
+                let link = document.createElement('a');
+                link.href = URL.createObjectURL(pdfBlob);
+                link.download = `Income_Report.pdf`;
+                link.click();
+                showToast('PDF डाउनलोड भयो!', 'success');
+            }
+        });
     }
 
     document.addEventListener("DOMContentLoaded", () => {
