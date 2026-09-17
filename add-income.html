@@ -536,7 +536,7 @@ tailwind.config = {
         }
     }
 
-    // PDF जेनेरेट गर्ने र bannerlogo.png लाई profile photo र address को बीचमा ठीक center मा मिलाउने फंक्सन
+    // PDF जेनेरेट गर्ने फंक्सन (bannerlogo.png को साइज ठूलो र मिलेको बनाइएको छ)
     function generateAndShareIncomePDF() {
         let incomes = JSON.parse(localStorage.getItem('digital_notebook_incomes') || '[]');
         if(incomes.length === 0) {
@@ -557,23 +557,23 @@ tailwind.config = {
             <table style="width: 100%; border-bottom: 2px solid #16a34a; padding-bottom: 15px; margin-bottom: 20px; border-collapse: collapse;">
                 <tr>
                     <!-- बायाँतर्फ प्रोफाइल फोटो र नाम -->
-                    <td style="vertical-align: middle; width: 25%;">
+                    <td style="vertical-align: top; width: 25%;">
                         <div style="width: 55px; height: 55px; border-radius: 50%; overflow: hidden; border: 2px solid #16a34a; margin-bottom: 4px;">
                             <img src="${profileAvatar}" style="width: 100%; height: 100%; object-fit: cover;">
                         </div>
                         <div style="font-size: 11px; font-weight: 700; color: #1f2937;">${profileName}</div>
                     </td>
 
-                    <!-- ठीक बीचमा bannerlogo.png (6000x1500px व्यवस्थापन गरिएको) -->
-                    <td style="vertical-align: middle; text-align: center; width: 42%; padding: 0 10px;">
-                        <img src="bannerlogo.png" style="width: 100%; max-height: 48px; object-fit: contain; display: block; margin: 0 auto;">
+                    <!-- बीचमा bannerlogo.png (अब यो स्पष्ट र राम्रो साइजमा देखिनेछ) -->
+                    <td style="vertical-align: middle; text-align: center; width: 45%; padding: 0 10px;">
+                        <img src="bannerlogo.png" style="width: 100%; max-width: 240px; height: auto; object-fit: contain; display: inline-block;">
                     </td>
 
                     <!-- दायाँतर्फ ठेगाना र विवरण -->
-                    <td style="vertical-align: middle; text-align: right; font-size: 10px; color: #555; line-height: 1.4; width: 33%;">
-                        <div>📍 ${profileAddress}</div>
-                        <div>📞 ${profileMobile}</div>
-                        <div>✉️ ${profileEmail}</div>
+                    <td style="vertical-align: top; text-align: right; font-size: 10px; color: #555; line-height: 1.4; width: 30%;">
+                        <div>📍 Address: ${profileAddress}</div>
+                        <div>📞 Contact: ${profileMobile}</div>
+                        <div>✉️ Email: ${profileEmail}</div>
                     </td>
                 </tr>
             </table>
