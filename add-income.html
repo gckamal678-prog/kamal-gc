@@ -536,7 +536,7 @@ tailwind.config = {
         }
     }
 
-    // PDF बनाउने र प्रिभ्यू देखाउने फंक्सन (bannerlogo.png top center मा राखिएको)
+    // PDF जेनेरेट गर्ने र bannerlogo.png लाई profile photo र address को बीचमा राख्ने फंक्सन
     function generateAndShareIncomePDF() {
         let incomes = JSON.parse(localStorage.getItem('digital_notebook_incomes') || '[]');
         if(incomes.length === 0) {
@@ -554,21 +554,23 @@ tailwind.config = {
         
         let html = `
         <div id="pdf-printable-content" style="background-color: #ffffff; color: #333333; font-family: 'Poppins', sans-serif; width: 100%; max-width: 650px; padding: 25px; border-radius: 12px; box-sizing: border-box;">
-            
-            <!-- Banner Logo Top Center -->
-            <div style="text-align: center; margin-bottom: 15px;">
-                <img src="bannerlogo.png" alt="Banner Logo" style="max-height: 45px; width: auto; object-fit: contain;">
-            </div>
-
             <table style="width: 100%; border-bottom: 2px solid #16a34a; padding-bottom: 15px; margin-bottom: 20px; border-collapse: collapse;">
                 <tr>
-                    <td style="vertical-align: top; width: 150px;">
-                        <div style="width: 70px; height: 70px; border-radius: 50%; overflow: hidden; border: 3px solid #16a34a; margin-bottom: 6px;">
+                    <!-- बायाँतर्फ प्रोफाइल फोटो र नाम -->
+                    <td style="vertical-align: top; width: 25%;">
+                        <div style="width: 60px; height: 60px; border-radius: 50%; overflow: hidden; border: 2px solid #16a34a; margin-bottom: 4px;">
                             <img src="${profileAvatar}" style="width: 100%; height: 100%; object-fit: cover;">
                         </div>
-                        <div style="font-size: 13px; font-weight: 700; color: #1f2937;">${profileName}</div>
+                        <div style="font-size: 11px; font-weight: 700; color: #1f2937;">${profileName}</div>
                     </td>
-                    <td style="vertical-align: top; text-align: right; font-size: 12px; color: #555; line-height: 1.5;">
+
+                    <!-- बीचमा bannerlogo.png (Top Center) -->
+                    <td style="vertical-align: middle; text-align: center; width: 40%;">
+                        <img src="bannerlogo.png" style="max-height: 40px; width: auto; object-fit: contain;">
+                    </td>
+
+                    <!-- दायाँतर्फ ठेगाना र विवरण -->
+                    <td style="vertical-align: top; text-align: right; font-size: 11px; color: #555; line-height: 1.4; width: 35%;">
                         <div>📍 Address: ${profileAddress}</div>
                         <div>📞 Contact: ${profileMobile}</div>
                         <div>✉️ Email: ${profileEmail}</div>
@@ -576,7 +578,7 @@ tailwind.config = {
                 </tr>
             </table>
 
-            <h2 style="text-align: center; color: #1f2937; margin-bottom: 20px; text-transform: uppercase; font-size: 16px; font-weight: 800; letter-spacing: 1px;">Income Report</h2>
+            <h2 style="text-align: center; color: #1f2937; margin-bottom: 20px; text-transform: uppercase; font-size: 15px; font-weight: 800; letter-spacing: 1px;">Income Report</h2>
 
             <table style="width: 100%; border-collapse: collapse; font-size: 11px;">
                 <thead>
@@ -609,7 +611,7 @@ tailwind.config = {
                 </tbody>
             </table>
 
-            <div style="margin-top: 20px; text-align: right; font-size: 15px; font-weight: bold; color: #16a34a; border-top: 2px solid #16a34a; padding-top: 15px;">
+            <div style="margin-top: 20px; text-align: right; font-size: 14px; font-weight: bold; color: #16a34a; border-top: 2px solid #16a34a; padding-top: 15px;">
                 Grand Total: Rs ${grandTotal.toFixed(2)}
             </div>
             
