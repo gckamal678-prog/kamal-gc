@@ -34,9 +34,21 @@ tailwind.config = {
         pointer-events: none;
         display: block;
     }
+    /* Toast Animation */
+    #toast-container {
+        transition: transform 0.3s ease, opacity 0.3s ease;
+    }
 </style>
 </head>
 <body class="bg-slate-100 dark:bg-slate-950 text-slate-800 dark:text-slate-100 text-xs flex flex-col h-screen overflow-hidden select-none">
+
+<!-- Toast Notification Container -->
+<div id="toast-container" class="fixed top-5 right-5 z-50 transform translate-y-[-20px] opacity-0 pointer-events-none transition-all duration-300">
+    <div id="toast-message" class="bg-slate-900 border border-emerald-500/40 text-white px-4 py-3 rounded-2xl shadow-2xl flex items-center gap-2.5 text-xs">
+        <i id="toast-icon" class="fa-solid fa-circle-check text-emerald-400 text-sm"></i>
+        <span id="toast-text">Success message</span>
+    </div>
+</div>
 
 <div class="flex min-h-screen w-full">
     
@@ -174,35 +186,36 @@ tailwind.config = {
     </div>
 </div>
 
-<!-- SECURE VAULT MODAL (PIN, Tabs & Change PIN) -->
+<!-- SECURE VAULT MODAL -->
 <div id="secure-vault-modal" class="fixed inset-0 bg-slate-950/85 backdrop-blur-md z-50 flex items-center justify-center p-4 hidden">
     <div class="bg-slate-900 p-5 rounded-3xl shadow-2xl w-full max-w-md space-y-4 border border-slate-800 text-white">
         <div class="flex justify-between items-center border-b border-slate-800 pb-3">
-            <h3 class="text-sm font-bold text-emerald-400 flex items-center gap-2"><i class="fa-solid fa-shield-halved"></i> व्यक्तिगत तथा गोप्य सुरक्षा (Secure Vault)</h3>
+            <h3 class="text-sm font-bold text-emerald-400 flex items-center gap-2"><i class="fa-solid fa-shield-halved"></i> Secure Vault</h3>
             <button onclick="closeSecureVaultModal()" class="text-slate-400 hover:text-white text-base"><i class="fa-solid fa-xmark"></i></button>
         </div>
 
         <!-- PIN LOCK SCREEN -->
         <div id="vault-lock-box" class="space-y-4 py-6 text-center">
-            <p class="text-xs text-slate-300">कृपया आफ्नो ४ अंकको पिन (PIN) हाल्नुहोस् (पूर्वनिर्धारित: 1234):</p>
+            <p class="text-xs text-slate-300">Enter 4-digit PIN (Default: 1234):</p>
             <div class="flex justify-center">
                 <input type="password" maxlength="4" id="vault-pin-input" class="w-36 bg-slate-800 border border-slate-700 rounded-xl text-center text-xl tracking-widest py-2 text-white focus:outline-none focus:border-emerald-500" placeholder="••••">
             </div>
-            <button onclick="unlockVaultPin()" class="px-5 py-2 bg-emerald-600 hover:bg-emerald-700 text-white text-xs font-bold rounded-xl transition shadow-md">अनलक गर्नुहोस्</button>
+            <div class="flex justify-center gap-2 pt-1">
+                <button onclick="unlockVaultPin()" class="px-4 py-2 bg-emerald-600 hover:bg-emerald-700 text-white text-xs font-bold rounded-xl transition shadow-md">Unlock PIN</button>
+                <button onclick="unlockWithBiometrics()" class="px-4 py-2 bg-slate-800 hover:bg-slate-700 text-emerald-400 border border-emerald-500/30 text-xs font-bold rounded-xl transition flex items-center gap-1.5"><i class="fa-solid fa-fingerprint"></i> Biometric</button>
+            </div>
         </div>
 
-        <!-- VAULT MAIN CONTENT (Shown after PIN unlock) -->
+        <!-- VAULT MAIN CONTENT -->
         <div id="vault-main-content" class="space-y-3 hidden">
             <div class="flex gap-1.5 border-b border-slate-800 pb-2">
-                <button onclick="switchVaultTab('notes')" id="btn-vtab-notes" class="flex-1 py-1.5 bg-emerald-600 text-white text-[11px] rounded-lg font-bold transition">गोप्य नोटहरू</button>
-                <button onclick="switchVaultTab('docs')" id="btn-vtab-docs" class="flex-1 py-1.5 bg-slate-800 text-slate-300 text-[11px] rounded-lg font-medium transition">डकुमेन्ट</button>
+                <button onclick="switchVaultTab('notes')" id="btn-vtab-notes" class="flex-1 py-1.5 bg-emerald-600 text-white text-[11px] rounded-lg font-bold transition">Secure Notes</button>
+                <button onclick="switchVaultTab('docs')" id="btn-vtab-docs" class="flex-1 py-1.5 bg-slate-800 text-slate-300 text-[11px] rounded-lg font-medium transition">Documents</button>
                 <button onclick="switchVaultTab('settings')" id="btn-vtab-settings" class="py-1.5 px-3 bg-slate-800 text-slate-300 text-[11px] rounded-lg font-medium transition"><i class="fa-solid fa-gear"></i></button>
             </div>
 
             <!-- Tab Body -->
-            <div id="vault-body-content" class="space-y-3 max-h-72 overflow-y-auto pr-1">
-                <!-- Dynamically loaded via JS -->
-            </div>
+            <div id="vault-body-content" class="space-y-3 max-h-72 overflow-y-auto pr-1"></div>
         </div>
     </div>
 </div>
@@ -212,6 +225,23 @@ tailwind.config = {
     let secureNotes = JSON.parse(localStorage.getItem('digital_notebook_secure_notes')) || [];
     let secureDocs = JSON.parse(localStorage.getItem('digital_notebook_secure_docs')) || [];
     let currentLang = localStorage.getItem('lang') || 'EN';
+
+    function showToast(message, isError = false) {
+        const container = document.getElementById('toast-container');
+        const textEl = document.getElementById('toast-text');
+        const iconEl = document.getElementById('toast-icon');
+        
+        textEl.innerText = message;
+        iconEl.className = isError ? "fa-solid fa-circle-exclamation text-rose-400 text-sm" : "fa-solid fa-circle-check text-emerald-400 text-sm";
+        
+        container.classList.remove('translate-y-[-20px]', 'opacity-0', 'pointer-events-none');
+        container.classList.add('translate-y-0', 'opacity-100');
+
+        setTimeout(() => {
+            container.classList.remove('translate-y-0', 'opacity-100');
+            container.classList.add('translate-y-[-20px]', 'opacity-0', 'pointer-events-none');
+        }, 3000);
+    }
 
     function toggleSidebar() {
         const sidebar = document.getElementById('sidebar');
@@ -276,7 +306,7 @@ tailwind.config = {
         localStorage.setItem('profile_mobile', mobile);
 
         loadUserData();
-        alert(currentLang === 'NEP' ? 'विवरण सफलतापूर्वक सेभ भयो!' : 'Details saved successfully!');
+        showToast('Details saved successfully!');
     }
 
     function loadUserData() {
@@ -332,8 +362,38 @@ tailwind.config = {
             document.getElementById('vault-lock-box').classList.add('hidden');
             document.getElementById('vault-main-content').classList.remove('hidden');
             switchVaultTab('notes');
+            showToast('Vault Unlocked Successfully!');
         } else {
-            alert('गलत पिन! कृपया फेरि प्रयास गर्नुहोस् (Default: 1234)');
+            showToast('Incorrect PIN! Try again.', true);
+        }
+    }
+
+    // Biometric / Fingerprint Authentication via WebAuthn API
+    async function unlockWithBiometrics() {
+        if (!window.PublicKeyCredential) {
+            showToast('Biometrics not supported on this device/browser.', true);
+            return;
+        }
+        try {
+            const publicKey = {
+                challenge: Uint8Array.from("digitalnotebook", c => c.charCodeAt(0)),
+                rp: { name: "Digital NoteBook" },
+                user: {
+                    id: Uint8Array.from("1", c => c.charCodeAt(0)),
+                    name: "user@notebook",
+                    displayName: "User"
+                },
+                pubKeyCredParams: [{ alg: -7, type: "public-key" }],
+                timeout: 60000,
+                authenticatorSelection: { authenticatorAttachment: "platform", userVerification: "required" }
+            };
+            await navigator.credentials.create({ publicKey });
+            document.getElementById('vault-lock-box').classList.add('hidden');
+            document.getElementById('vault-main-content').classList.remove('hidden');
+            switchVaultTab('notes');
+            showToast('Biometric Authentication Successful!');
+        } catch (error) {
+            showToast('Biometric verification failed or cancelled.', true);
         }
     }
 
@@ -343,7 +403,6 @@ tailwind.config = {
         const settingsBtn = document.getElementById('btn-vtab-settings');
         const body = document.getElementById('vault-body-content');
 
-        // Reset button styles
         notesBtn.className = "flex-1 py-1.5 bg-slate-800 text-slate-300 text-[11px] rounded-lg font-medium transition";
         docsBtn.className = "flex-1 py-1.5 bg-slate-800 text-slate-300 text-[11px] rounded-lg font-medium transition";
         settingsBtn.className = "py-1.5 px-3 bg-slate-800 text-slate-300 text-[11px] rounded-lg font-medium transition";
@@ -352,9 +411,9 @@ tailwind.config = {
             notesBtn.className = "flex-1 py-1.5 bg-emerald-600 text-white text-[11px] rounded-lg font-bold transition";
             body.innerHTML = `
                 <div class="space-y-2 bg-slate-800/40 p-3 rounded-xl border border-slate-700">
-                    <input type="text" id="secure-note-title" placeholder="नोटको शीर्षक..." class="w-full bg-slate-800 border border-slate-700 rounded-lg p-2 text-white text-xs outline-none">
-                    <textarea id="secure-note-desc" placeholder="तपाईंको गोप्य कुरा यहाँ लेख्नुहोस्..." class="w-full h-20 bg-slate-800 border border-slate-700 rounded-lg p-2 text-white text-xs outline-none"></textarea>
-                    <button onclick="saveSecureNote()" class="w-full py-2 bg-emerald-600 hover:bg-emerald-700 text-white font-bold rounded-lg text-xs transition">गोप्य नोट सेभ गर्नुहोस्</button>
+                    <input type="text" id="secure-note-title" placeholder="Note Title..." class="w-full bg-slate-800 border border-slate-700 rounded-lg p-2 text-white text-xs outline-none">
+                    <textarea id="secure-note-desc" placeholder="Write your secret here..." class="w-full h-20 bg-slate-800 border border-slate-700 rounded-lg p-2 text-white text-xs outline-none"></textarea>
+                    <button onclick="saveSecureNote()" class="w-full py-2 bg-emerald-600 hover:bg-emerald-700 text-white font-bold rounded-lg text-xs transition">Save Secure Note</button>
                 </div>
                 <div class="space-y-2 mt-3" id="secure-notes-list">
                     ${secureNotes.map(n => `
@@ -372,10 +431,10 @@ tailwind.config = {
             docsBtn.className = "flex-1 py-1.5 bg-emerald-600 text-white text-[11px] rounded-lg font-bold transition";
             body.innerHTML = `
                 <div class="space-y-2 bg-slate-800/40 p-3 rounded-xl border border-slate-700">
-                    <label class="block text-[11px] font-bold text-emerald-400">📄 कागजातको फोटो खिच्नुहोस् / अपलोड गर्नुहोस्</label>
+                    <label class="block text-[11px] font-bold text-emerald-400">📄 Capture / Upload Document</label>
                     <input type="file" accept="image/*" capture="environment" id="doc-file-input" class="w-full text-xs text-slate-300 file:mr-2 file:py-1.5 file:px-3 file:rounded-lg file:border-0 file:text-[10px] file:font-bold file:bg-emerald-600 file:text-white">
-                    <input type="text" id="doc-title-input" placeholder="कागजातको नाम (जस्तै: नागरिकता, लाइसेन्स)" class="w-full bg-slate-800 border border-slate-700 rounded-lg p-2 text-white text-xs outline-none">
-                    <button onclick="saveSecureDoc()" class="w-full py-2 bg-emerald-600 hover:bg-emerald-700 text-white font-bold rounded-lg text-xs transition">कागजात सुरक्षित गर्नुहोस्</button>
+                    <input type="text" id="doc-title-input" placeholder="Document Name (e.g. Citizenship, License)" class="w-full bg-slate-800 border border-slate-700 rounded-lg p-2 text-white text-xs outline-none">
+                    <button onclick="saveSecureDoc()" class="w-full py-2 bg-emerald-600 hover:bg-emerald-700 text-white font-bold rounded-lg text-xs transition">Save Document</button>
                 </div>
                 <div class="space-y-2 mt-3 grid grid-cols-2 gap-2" id="secure-docs-list">
                     ${secureDocs.map(d => `
@@ -384,7 +443,7 @@ tailwind.config = {
                                 <img src="${d.image}" alt="Doc" class="w-full h-24 object-cover rounded-lg border border-slate-700 mb-1">
                                 <h5 class="font-bold text-xs truncate text-white">${d.title}</h5>
                             </div>
-                            <button onclick="deleteSecureDoc(${d.id})" class="w-full py-1 bg-rose-600/20 hover:bg-rose-600 text-rose-400 hover:text-white rounded text-[10px] font-bold transition">डिलिट</button>
+                            <button onclick="deleteSecureDoc(${d.id})" class="w-full py-1 bg-rose-600/20 hover:bg-rose-600 text-rose-400 hover:text-white rounded text-[10px] font-bold transition">Delete</button>
                         </div>
                     `).join('')}
                 </div>
@@ -393,16 +452,16 @@ tailwind.config = {
             settingsBtn.className = "py-1.5 px-3 bg-emerald-600 text-white text-[11px] rounded-lg font-bold transition";
             body.innerHTML = `
                 <div class="space-y-3 bg-slate-800/40 p-3 rounded-xl border border-slate-700">
-                    <h5 class="font-bold text-emerald-400 text-xs"><i class="fa-solid fa-key"></i> पिन कोड परिवर्तन गर्नुहोस् (Change PIN)</h5>
+                    <h5 class="font-bold text-emerald-400 text-xs"><i class="fa-solid fa-key"></i> Change PIN Code</h5>
                     <div>
-                        <label class="block text-[10px] text-slate-400 mb-1">पुरानो पिन (Old PIN)</label>
+                        <label class="block text-[10px] text-slate-400 mb-1">Old PIN</label>
                         <input type="password" maxlength="4" id="old-pin" placeholder="••••" class="w-full bg-slate-800 border border-slate-700 rounded-lg p-2 text-white text-xs outline-none">
                     </div>
                     <div>
-                        <label class="block text-[10px] text-slate-400 mb-1">नयाँ पिन (New 4-Digit PIN)</label>
+                        <label class="block text-[10px] text-slate-400 mb-1">New 4-Digit PIN</label>
                         <input type="password" maxlength="4" id="new-pin" placeholder="••••" class="w-full bg-slate-800 border border-slate-700 rounded-lg p-2 text-white text-xs outline-none">
                     </div>
-                    <button onclick="changeVaultPin()" class="w-full py-2 bg-emerald-600 hover:bg-emerald-700 text-white font-bold rounded-lg text-xs transition shadow-md">पिन अपडेट गर्नुहोस्</button>
+                    <button onclick="changeVaultPin()" class="w-full py-2 bg-emerald-600 hover:bg-emerald-700 text-white font-bold rounded-lg text-xs transition shadow-md">Update PIN</button>
                 </div>
             `;
         }
@@ -414,16 +473,16 @@ tailwind.config = {
         const currentSavedPin = localStorage.getItem('vault_pin') || '1234';
 
         if(oldPin !== currentSavedPin) {
-            alert('पुरानो पिन मिलेन!');
+            showToast('Old PIN is incorrect!', true);
             return;
         }
         if(newPin.length !== 4) {
-            alert('नयाँ पिन ठ ακ्कै ४ अंकको हुनुपर्छ!');
+            showToast('New PIN must be 4 digits!', true);
             return;
         }
 
         localStorage.setItem('vault_pin', newPin);
-        alert('पिन सफलतापूर्वक परिवर्तन भयो!');
+        showToast('PIN changed successfully!');
         switchVaultTab('notes');
     }
 
@@ -435,19 +494,21 @@ tailwind.config = {
         secureNotes.unshift({id: Date.now(), title: title || 'Untitled', content});
         localStorage.setItem('digital_notebook_secure_notes', JSON.stringify(secureNotes));
         switchVaultTab('notes');
+        showToast('Secure note saved!');
     }
 
     function deleteSecureNote(id) {
         secureNotes = secureNotes.filter(n => n.id !== id);
         localStorage.setItem('digital_notebook_secure_notes', JSON.stringify(secureNotes));
         switchVaultTab('notes');
+        showToast('Secure note deleted!');
     }
 
     function saveSecureDoc() {
         const title = document.getElementById('doc-title-input').value.trim();
         const fileInput = document.getElementById('doc-file-input');
         if(!fileInput.files[0]) {
-            alert('कृपया कागजातको फोटो चयन गर्नुहोस्!');
+            showToast('Please select a document image!', true);
             return;
         }
 
@@ -456,6 +517,7 @@ tailwind.config = {
             secureDocs.unshift({id: Date.now(), title: title || 'Document', image: e.target.result});
             localStorage.setItem('digital_notebook_secure_docs', JSON.stringify(secureDocs));
             switchVaultTab('docs');
+            showToast('Document saved successfully!');
         };
         reader.readAsDataURL(fileInput.files[0]);
     }
@@ -464,6 +526,7 @@ tailwind.config = {
         secureDocs = secureDocs.filter(d => d.id !== id);
         localStorage.setItem('digital_notebook_secure_docs', JSON.stringify(secureDocs));
         switchVaultTab('docs');
+        showToast('Document deleted!');
     }
 
     function openNoteModal(id = null) {
@@ -502,14 +565,14 @@ tailwind.config = {
         localStorage.setItem('digital_notebook_notes', JSON.stringify(notes));
         closeNoteModal();
         renderNotes();
+        showToast('Note saved successfully!');
     }
 
     function deleteNote(id) {
-        if(confirm('Delete this note?')) {
-            notes = notes.filter(n => n.id !== id);
-            localStorage.setItem('digital_notebook_notes', JSON.stringify(notes));
-            renderNotes();
-        }
+        notes = notes.filter(n => n.id !== id);
+        localStorage.setItem('digital_notebook_notes', JSON.stringify(notes));
+        renderNotes();
+        showToast('Note deleted!');
     }
 
     function renderNotes() {
