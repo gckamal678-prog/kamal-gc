@@ -7,31 +7,12 @@
 <meta name="apple-mobile-web-app-capable" content="yes">
 <meta name="apple-mobile-web-app-status-bar-style" content="black-translucent">
 <meta name="apple-mobile-web-app-title" content="NoteBook">
-<link rel="apple-touch-icon" href="N1024.png">
-<meta name="keywords" content="digital notebook, transaction manager, nepali finance app, income expense tracker, note taking app, KAMAL G.C.">
 <meta http-equiv="Cache-Control" content="no-cache, no-store, must-revalidate">
 <meta http-equiv="Pragma" content="no-cache">
 <meta http-equiv="Expires" content="0">
 <meta http-equiv="Content-Security-Policy" content="upgrade-insecure-requests">
 
-<!-- Open Graph / Facebook / WhatsApp -->
-<meta property="og:type" content="website">
-<meta property="og:url" content="https://dn.kamalgc.com.np">
-<meta property="og:title" content="Digital NoteBook - Transactions & Notes">
-<meta property="og:description" content="Manage your daily transactions, receivables, payables, and personal notes securely in one place.">
-<meta property="og:image" content="https://raw.githubusercontent.com/gckamal678-prog/Digital-Nepal/main/N1024.png">
-
-<!-- Twitter -->
-<meta name="twitter:card" content="summary_large_image">
-<meta name="twitter:title" content="Digital NoteBook">
-<meta name="twitter:description" content="Digital notebook and transaction management application.">
-<meta name="twitter:image" content="https://raw.githubusercontent.com/gckamal678-prog/Digital-Nepal/main/N1024.png">
-
-<meta name="description" content="Digital notebook and transaction management application.">
-<meta name="author" content="Kamal GC">
-<meta name="theme-color" content="#090d16">
 <script src="https://cdn.tailwindcss.com"></script>
-
 <script>
 tailwind.config = {
     darkMode: 'class',
@@ -62,7 +43,7 @@ tailwind.config = {
 </script>
 <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
 <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700;800&display=swap" rel="stylesheet">
- <link rel="manifest" href="manifest.json"> 
+<link rel="manifest" href="manifest.json"> 
 <style>
     @keyframes pulseGlow {
         0%, 100% { opacity: 1; filter: drop-shadow(0 0 2px rgba(16, 185, 129, 0.4)); }
@@ -71,14 +52,11 @@ tailwind.config = {
     .animated-title { animation: pulseGlow 3s infinite ease-in-out; }
     @keyframes spinSlow { from { transform: rotate(0deg); } to { transform: rotate(360deg); } }
     .animate-spin-slow { animation: spinSlow 8s linear infinite; }
-    @keyframes pulse-slow { 0%, 100% { transform: scale(1); opacity: 0.5; } 50% { transform: scale(1.1); opacity: 1; } }
-    .animate-pulse-slow { animation: pulse-slow 2s infinite; }
-    #tour-card.active-card { opacity: 1; transform: scale(1); }
 </style>
 </head>
 <body class="bg-slate-100 dark:bg-slate-950 text-slate-800 dark:text-slate-100 text-xs font-sans">
 
-<!-- SECURITY LOCK SCREEN -->
+<!-- SECURITY LOCK SCREEN (MPIN & Biometric) -->
 <div id="security-lock-screen" class="fixed inset-0 bg-slate-950 z-[100] flex flex-col items-center justify-center p-4 hidden">
     <div class="max-w-sm w-full bg-slate-900 border border-slate-800 p-6 rounded-3xl shadow-2xl space-y-6 text-white text-center">
         <div class="w-16 h-16 mx-auto rounded-2xl bg-emerald-500/10 border border-emerald-500/30 flex items-center justify-center text-emerald-400 text-2xl">
@@ -121,7 +99,7 @@ tailwind.config = {
 
 <!-- WELCOME SPLASH SCREEN -->
 <div id="splash-screen" class="fixed inset-0 bg-slate-950 z-50 flex flex-col items-center justify-center text-white transition-opacity duration-700 overflow-hidden select-none">
-    <div class="absolute inset-0 bg-[linear-gradient(to_right,#065f4615_1px,transparent_1px),linear-gradient(to_bottom,#065f4615_1px,transparent_1px)] bg-[size:3rem_3rem] [mask-image:radial-gradient(ellipse_60%_50%_at_50%_50%,#000_70%,transparent_100%)] pointer-events-none"></div>
+    <div class="absolute inset-0 bg-[linear-gradient(to_right,#065f4615_1px,transparent_1px),linear-gradient(to_bottom,#065f4615_1px,transparent_1px)] bg-[size:3rem_3rem] pointer-events-none"></div>
     <div class="relative z-10 text-center space-y-6 max-w-sm px-6">
         <div class="flex justify-center">
             <div class="relative">
@@ -149,7 +127,6 @@ tailwind.config = {
 </div>
 
 <div class="flex min-h-screen w-full">
-    
     <!-- SIDEBAR SECTION -->
     <div id="sidebar" class="fixed inset-y-0 left-0 z-50 w-72 bg-slate-900 border-r border-slate-800 transform -translate-x-full transition-transform duration-300 flex flex-col text-white">
         <div class="flex items-center justify-between px-4 py-3 border-b border-slate-800">
@@ -227,7 +204,6 @@ tailwind.config = {
     </div>
 
     <div class="flex-1 flex flex-col w-full">
-        
         <!-- HEADER SECTION -->
         <header id="top-controls-area" class="sticky top-0 z-30 flex items-center justify-between px-3 md:px-5 py-3.5 bg-slate-900/95 backdrop-blur border-b border-emerald-500/20 shadow-md">
             <div class="flex items-center space-x-2.5">
@@ -254,7 +230,6 @@ tailwind.config = {
         </header>
 
         <main class="p-4 md:p-6 space-y-4 flex-1 w-full text-xs">
-            
             <div class="flex justify-between items-start px-1 py-1 text-white">
                 <div>
                     <p id="dynamic-date" class="text-[11px] font-semibold tracking-wider text-emerald-500 dark:text-emerald-400 uppercase mb-1"></p>
@@ -269,7 +244,7 @@ tailwind.config = {
                 </a>
             </div>
 
-            <!-- ROW 1 & 2: Financial Summaries (3x2 Grid with Larger Text) -->
+            <!-- FINANCIAL SUMMARIES -->
             <div id="summary-cards-area" class="grid grid-cols-3 gap-2 text-center pt-2 bg-slate-200/30 dark:bg-slate-900/40 p-3 rounded-xl border border-slate-200 dark:border-slate-800/80">
                 <div class="flex flex-col items-center p-1 bg-slate-800/40 rounded-lg border border-slate-700/50">
                     <span class="text-lg mb-0.5">💵</span>
@@ -298,27 +273,21 @@ tailwind.config = {
                 </div>
                 <div class="flex flex-col items-center p-1 bg-emerald-950/40 rounded-lg border border-emerald-500/40">
                     <span class="text-lg mb-0.5">💰</span>
-                    <span class="text-[10px] font-semibold text-emerald-300 truncate w-full"><span class="lang-text" data-en="Net Balance" data-np="खुद बचत बाहेक">Net Balance</span></span>
+                    <span class="text-[10px] font-semibold text-emerald-300 truncate w-full"><span class="lang-text" data-en="Net Balance" data-np="खुद बचत">Net Balance</span></span>
                     <span id="summary-net-balance" class="text-sm md:text-base font-extrabold text-emerald-400 mt-0.5">Rs 0</span>
                 </div>
             </div>
 
             <hr class="border-slate-200 dark:border-slate-800 my-2">
+            
             <!-- BANNER ADS SECTION -->
             <div id="custom-banner-ad" class="mt-4 w-full overflow-hidden rounded-xl border border-slate-200 dark:border-slate-800 shadow-lg bg-slate-900">
                 <a href="https://kids.kamalgc.com.np" target="_blank" class="block w-full h-full">
-                    <video 
-                        src="bannerads.mp4" 
-                        autoplay 
-                        loop 
-                        muted 
-                        playsinline 
-                        class="w-full h-auto object-cover rounded-xl pointer-events-none">
-                    </video>
+                    <video src="bannerads.mp4" autoplay loop muted playsinline class="w-full h-auto object-cover rounded-xl pointer-events-none"></video>
                 </a>
             </div>
 
-            <!-- Connected Features -->
+            <!-- QUICK ACTIONS -->
             <div id="quick-action-area" class="space-y-2">
                 <div class="grid grid-cols-3 gap-2 text-center">
                     <a href="add-transaction.html" class="flex flex-col items-center p-2 rounded-xl bg-slate-200/50 dark:bg-slate-900/65 cursor-pointer hover:bg-slate-200 dark:hover:bg-slate-900 transition">
@@ -361,12 +330,11 @@ tailwind.config = {
                     </a>
                 </div>
             </div>
-
         </main>
     </div>
 </div>
 
-<!-- Firebase & Application Scripts -->
+<!-- FIREBASE SCRIPT -->
 <script type="module">
     import { initializeApp } from "https://www.gstatic.com/firebasejs/10.8.0/firebase-app.js";
     import { getDatabase, ref, set, get, child } from "https://www.gstatic.com/firebasejs/10.8.0/firebase-database.js";
@@ -389,7 +357,7 @@ tailwind.config = {
             const localData = {
                 notes: JSON.parse(localStorage.getItem('advanced_notebook_notes') || localStorage.getItem('notes') || '[]'),
                 incomes: JSON.parse(localStorage.getItem('digital_notebook_incomes') || localStorage.getItem('incomes') || '[]'),
-                savings: JSON.parse(localStorage.getItem('digital_notebook_savings') || localStorage.getItem('savings') || localStorage.getItem('saving_data') || '[]'),
+                savings: JSON.parse(localStorage.getItem('digital_notebook_savings') || localStorage.getItem('savings') || '[]'),
                 transactions: JSON.parse(localStorage.getItem('digital_notebook_transactions') || localStorage.getItem('transactions') || '[]'),
                 theme: localStorage.getItem('theme') || 'dark',
                 language: localStorage.getItem('language') || 'en',
@@ -431,22 +399,9 @@ tailwind.config = {
         const result = await restoreFromCloud(userId);
         if(result.success) location.reload();
     };
-
-    async function triggerAutomaticCloudBackup() {
-        let userId = localStorage.getItem('my_unique_userid');
-        if (userId) {
-            await backupToCloud(userId);
-        }
-    }
-
-    window.addEventListener('storage', () => {
-        triggerAutomaticCloudBackup();
-    });
-    setInterval(() => {
-        triggerAutomaticCloudBackup();
-    }, 60000);
 </script>
 
+<!-- APPLICATION LOGIC SCRIPT -->
 <script>
     let currentEnteredPin = "";
     
@@ -457,12 +412,9 @@ tailwind.config = {
         
         if ((savedPin && savedPin.length === 4) || savedBiometric === 'enabled') {
             lockScreen.classList.remove('hidden');
-            
             if (savedBiometric === 'enabled') {
                 document.getElementById('biometric-container').classList.remove('hidden');
-                setTimeout(() => {
-                    triggerBiometricAuth();
-                }, 300);
+                setTimeout(() => { triggerBiometricAuth(); }, 300);
             } else {
                 document.getElementById('biometric-container').classList.add('hidden');
             }
@@ -520,56 +472,22 @@ tailwind.config = {
 
     window.triggerBiometricAuth = async function() {
         try {
-            if (window.PublicKeyCredential && PublicKeyCredential.isUserVerifyingPlatformAuthenticatorAvailable) {
-                const available = await PublicKeyCredential.isUserVerifyingPlatformAuthenticatorAvailable();
-                if (available) {
-                    const publicKey = {
-                        challenge: new Uint8Array([21, 31, 105, 78, 18, 45, 7, 88]),
-                        rp: { name: "Digital NoteBook" },
-                        user: {
-                            id: new Uint8Array([1]),
-                            name: "user",
-                            displayName: "User"
-                        },
-                        pubKeyCredParams: [{ alg: -7, type: "public-key" }],
+            if (window.navigator.credentials) {
+                const credential = await window.navigator.credentials.get({
+                    publicKey: {
+                        challenge: new Uint8Array([1,2,3,4,5,6,7,8]),
                         timeout: 60000,
                         userVerification: "required"
-                    };
-                    
-                    // If creating or getting credential depending on setup, for biometric login verification:
-                    // Using navigator.credentials.get with assertion if credentials exist, or fallback to navigator.credentials.create/get.
-                    // For simple biometric prompt implementation via WebAuthn:
-                    const credential = await navigator.credentials.get({
-                        publicKey: {
-                            challenge: new Uint8Array([1,2,3,4,5,6,7,8]),
-                            timeout: 60000,
-                            userVerification: "required"
-                        }
-                    });
-                    if (credential) {
-                        document.getElementById('security-lock-screen').classList.add('hidden');
-                        currentEnteredPin = "";
-                        updatePinDots();
-                        return;
                     }
+                });
+                if (credential) {
+                    document.getElementById('security-lock-screen').classList.add('hidden');
+                    currentEnteredPin = "";
+                    updatePinDots();
                 }
-            }
-            
-            // Fallback simulation / Web Authentication API prompt trigger
-            const authResult = await window.navigator.credentials.get({
-                publicKey: {
-                    challenge: new Uint8Array([0,1,2,3,4,5,6,7]),
-                    timeout: 60000,
-                    userVerification: "required"
-                }
-            });
-            if (authResult) {
-                document.getElementById('security-lock-screen').classList.add('hidden');
-                currentEnteredPin = "";
-                updatePinDots();
             }
         } catch (error) {
-            console.log("Biometric auth prompt handled or cancelled", error);
+            console.log("Biometric auth cancelled", error);
         }
     }
 
@@ -620,9 +538,7 @@ tailwind.config = {
         const now = new Date();
         const options = { weekday: 'long', year: 'numeric', month: 'long', day: 'numeric' };
         const dateString = now.toLocaleDateString(currentLang === 'np' ? 'ne-NP' : 'en-US', options).toUpperCase();
-        
-        const timeOptions = { hour: '2-digit', minute: '2-digit', second: '2-digit', hour12: true };
-        const timeString = now.toLocaleTimeString('en-US', timeOptions);
+        const timeString = now.toLocaleTimeString('en-US', { hour: '2-digit', minute: '2-digit', second: '2-digit', hour12: true });
 
         const dateEl = document.getElementById('dynamic-date');
         if (dateEl) dateEl.innerText = `${dateString} | ${timeString}`;
@@ -645,59 +561,26 @@ tailwind.config = {
     setInterval(updateDynamicHeader, 1000);
 
     function updateSummaryCards() {
-        const incomeKeys = ['digital_notebook_incomes', 'incomes', 'income_data', 'add_income_list'];
-        let incomes = [];
-        for (let key of incomeKeys) {
-            const data = localStorage.getItem(key);
-            if (data) {
-                try {
-                    const parsed = JSON.parse(data);
-                    if (Array.isArray(parsed) && parsed.length > 0) { incomes = parsed; break; }
-                } catch(e) {}
-            }
-        }
-        const totalIncome = incomes.reduce((sum, item) => sum + Number(item.amount || item.incomeAmount || item.val || item.total || item.price || 0), 0);
+        const incomes = JSON.parse(localStorage.getItem('digital_notebook_incomes') || localStorage.getItem('incomes') || '[]');
+        const totalIncome = incomes.reduce((sum, item) => sum + Number(item.amount || item.incomeAmount || 0), 0);
         if(document.getElementById('summary-income')) document.getElementById('summary-income').innerText = `Rs ${totalIncome.toLocaleString()}`;
 
-        const savingKeys = ['digital_notebook_savings', 'savings', 'saving_data', 'add_saving_list'];
-        let savings = [];
-        for (let key of savingKeys) {
-            const data = localStorage.getItem(key);
-            if (data) {
-                try {
-                    const parsed = JSON.parse(data);
-                    if (Array.isArray(parsed) && parsed.length > 0) { savings = parsed; break; }
-                } catch(e) {}
-            }
-        }
-        const totalSaving = savings.reduce((sum, item) => sum + Number(item.amount || item.savingAmount || item.val || item.total || item.price || 0), 0);
+        const savings = JSON.parse(localStorage.getItem('digital_notebook_savings') || localStorage.getItem('savings') || '[]');
+        const totalSaving = savings.reduce((sum, item) => sum + Number(item.amount || item.savingAmount || 0), 0);
         if(document.getElementById('summary-saving')) document.getElementById('summary-saving').innerText = `Rs ${totalSaving.toLocaleString()}`;
 
-        const txKeys = ['digital_notebook_transactions', 'transactions', 'advanced_notebook_notes', 'notes', 'transaction_list'];
-        let transactions = [];
-        for (let key of txKeys) {
-            const data = localStorage.getItem(key);
-            if (data) {
-                try {
-                    const parsed = JSON.parse(data);
-                    if (Array.isArray(parsed) && parsed.length > 0) { transactions = parsed; break; }
-                } catch(e) {}
-            }
-        }
-
+        const transactions = JSON.parse(localStorage.getItem('digital_notebook_transactions') || localStorage.getItem('transactions') || '[]');
         let totalExpense = 0, totalReceivable = 0, totalPayable = 0;
+        
         transactions.forEach(tx => {
-            const amt = Number(tx.amount || tx.txAmount || tx.val || tx.principalAmount || tx.total || tx.price || 0);
-            const tType = String(tx.type || tx.category || tx.transactionType || tx.action || '').toLowerCase();
-            
-            if (tType.includes('expense') || tType.includes('खर्च') || tType.includes('invest')) {
+            const amt = Number(tx.amount || tx.txAmount || 0);
+            const tType = String(tx.type || tx.category || '').toLowerCase();
+            if (tType.includes('expense') || tType.includes('खर्च')) {
                 totalExpense += amt;
-            } else if (tType.includes('receive') || tType.includes('लिनु') || tType.includes('पाउनुपर्ने')) {
+            } else if (tType.includes('receive') || tType.includes('पाउनुपर्ने')) {
                 totalReceivable += amt;
-            } else if (tType.includes('give') || tType.includes('payable') || tType.includes('दिनुपर्ने') || tType.includes('दिनु') || tType.includes('pay')) {
-                totalPayable += amt;
             } else {
-                totalReceivable += amt;
+                totalPayable += amt;
             }
         });
 
@@ -708,10 +591,6 @@ tailwind.config = {
         if(document.getElementById('summary-payable')) document.getElementById('summary-payable').innerText = `Rs ${totalPayable.toLocaleString()}`;
         if(document.getElementById('summary-net-balance')) document.getElementById('summary-net-balance').innerText = `Rs ${netBalance.toLocaleString()}`;
     }
-
-    window.addEventListener('pageshow', (event) => { updateSummaryCards(); });
-    window.addEventListener('focus', () => { updateSummaryCards(); });
-    window.addEventListener('storage', (event) => { updateSummaryCards(); });
 
     function saveProfileDetails() {
         const name = document.getElementById('input-full-name').value;
@@ -738,7 +617,7 @@ tailwind.config = {
         const savedMobile = localStorage.getItem('profile_mobile') || '';
 
         if(document.getElementById('input-full-name')) document.getElementById('input-full-name').value = savedName;
-        if(document.getElementById('input-email')) document.getElementById('input-email')->value = savedEmail;
+        if(document.getElementById('input-email')) document.getElementById('input-email').value = savedEmail;
         if(document.getElementById('input-address')) document.getElementById('input-address').value = savedAddress;
         if(document.getElementById('input-mobile')) document.getElementById('input-mobile').value = savedMobile;
 
@@ -794,7 +673,7 @@ tailwind.config = {
 
         let progress = 0;
         const loadingInterval = setInterval(() => {
-            progress += 2;
+            progress += 5;
             if (progress >= 100) {
                 progress = 100;
                 clearInterval(loadingInterval);
@@ -808,21 +687,10 @@ tailwind.config = {
             }
             progressBar.style.width = progress + '%';
             loadPercent.textContent = progress + '%';
-        }, 100);
+        }, 50);
 
         setTimeout(typeWriter, 200);
     });
-</script>
-
-<script>
-    if ('serviceWorker' in navigator) {
-        window.ensureServiceWorkerRegistered = () => {
-            navigator.serviceWorker.register('./sw.js').catch(() => {});
-        };
-        window.addEventListener('load', () => {
-            ensureServiceWorkerRegistered();
-        });
-    }
 </script>
 </body>
 </html>
