@@ -59,34 +59,34 @@ tailwind.config = {
                 <input type="file" id="avatar-upload-input" accept="image/*" class="hidden" onchange="handleAvatarUpload(event)">
                 <div>
                     <h3 id="sidebar-profile-name" class="text-white font-bold text-sm"></h3>
-                    <p class="text-[10px] text-slate-400"><span class="lang-text" data-en="Click icon to set photo" data-np="फोटो राख्न क्लिक गर्नुहोस्">Click icon to set photo</span></p>
+                    <p class="text-[10px] text-slate-400">Click icon to set photo</p>
                 </div>
             </div>
 
             <!-- SIDEBAR NAVIGATION -->
             <nav class="space-y-1 font-medium">
-                <a href="index.html" class="flex items-center gap-2.5 py-2.5 px-3 rounded-xl hover:bg-slate-800 text-slate-300 transition"><span>📊</span> <span class="lang-text" data-en="Overview" data-np="अवलोकन">Overview</span></a>
-                <a href="#" class="flex items-center gap-2.5 py-2.5 px-3 rounded-xl bg-emerald-600 text-white shadow-md transition"><span>🩺</span> <span class="lang-text" data-en="Health & Utilities" data-np="स्वास्थ्य र टूलहरू">Health & Utilities</span></a>
+                <a href="index.html" class="flex items-center gap-2.5 py-2.5 px-3 rounded-xl hover:bg-slate-800 text-slate-300 transition"><span>📊</span> <span>Overview</span></a>
+                <a href="#" class="flex items-center gap-2.5 py-2.5 px-3 rounded-xl bg-emerald-600 text-white shadow-md transition"><span>🩺</span> <span>Health & Utilities</span></a>
             </nav>
 
             <div class="space-y-2.5 bg-slate-800/50 p-3 rounded-xl border border-slate-700/60">
                 <h3 class="text-[11px] font-bold text-white flex items-center gap-1.5 mb-1">
-                    <i class="fa-solid fa-address-card text-emerald-400"></i> <span class="lang-text" data-en="Personal Info" data-np="व्यक्तिगत विवरण">Personal Info</span>
+                    <i class="fa-solid fa-address-card text-emerald-400"></i> <span>Personal Info</span>
                 </h3>
                 <div>
-                    <label class="block text-[10px] font-semibold text-slate-400 mb-0.5"><span class="lang-text" data-en="Full Name" data-np="पूरा नाम">Full Name</span></label>
+                    <label class="block text-[10px] font-semibold text-slate-400 mb-0.5"><span>Full Name</span></label>
                     <input type="text" id="input-full-name" placeholder="Enter Full Name" class="w-full bg-slate-800 border border-slate-700 rounded-lg px-2.5 py-2 text-white text-xs focus:outline-none focus:border-emerald-500">
                 </div>
                 <div>
-                    <label class="block text-[10px] font-semibold text-slate-400 mb-0.5"><span class="lang-text" data-en="Address" data-np="ठेगाना">Address</span></label>
+                    <label class="block text-[10px] font-semibold text-slate-400 mb-0.5"><span>Address</span></label>
                     <input type="text" id="input-address" placeholder="Enter Address" class="w-full bg-slate-800 border border-slate-700 rounded-lg px-2.5 py-2 text-white text-xs focus:outline-none focus:border-emerald-500">
                 </div>
                 <div>
-                    <label class="block text-[10px] font-semibold text-slate-400 mb-0.5"><span class="lang-text" data-en="Mobile Number" data-np="मोबाइल नम्बर">Mobile Number</span></label>
+                    <label class="block text-[10px] font-semibold text-slate-400 mb-0.5"><span>Mobile Number</span></label>
                     <input type="tel" id="input-mobile" placeholder="Enter Mobile Number" class="w-full bg-slate-800 border border-slate-700 rounded-lg px-2.5 py-2 text-white text-xs focus:outline-none focus:border-emerald-500">
                 </div>
                 <button onclick="saveProfileDetails()" class="w-full py-2 bg-emerald-600 hover:bg-emerald-700 text-white font-bold rounded-lg transition shadow-md">
-                    <span class="lang-text" data-en="Save Info" data-np="सेभ गर्नुहोस्">Save Info</span>
+                    <span>Save Info</span>
                 </button>
             </div>
         </div>
@@ -119,7 +119,7 @@ tailwind.config = {
             </div>
         </header>
 
-        <!-- MAIN CONTENT AREA (3 Features) -->
+        <!-- MAIN CONTENT AREA -->
         <main class="p-4 md:p-6 space-y-4 flex-1 w-full overflow-y-auto">
             
             <!-- 1. LIVE CALENDAR & TIME -->
@@ -129,38 +129,38 @@ tailwind.config = {
                         <i class="fa-solid fa-calendar-days text-base"></i>
                     </div>
                     <div>
-                        <p class="text-[10px] text-slate-400 font-semibold uppercase tracking-wider"><span class="lang-text" data-en="Current Date & Time" data-np="आजको मिति र समय">Current Date & Time</span></p>
+                        <p class="text-[10px] text-slate-400 font-semibold uppercase tracking-wider"><span>Current Date & Time</span></p>
                         <p id="dynamic-date" class="text-xs md:text-sm font-bold tracking-wide">Loading...</p>
                     </div>
                 </div>
             </div>
 
-            <!-- 2. BMI CALCULATOR (Height in Feet & Inches) -->
+            <!-- 2. BMI CALCULATOR -->
             <div class="bg-white dark:bg-slate-900 p-4 md:p-5 rounded-2xl border border-slate-200 dark:border-slate-800 shadow-sm space-y-3">
                 <div class="flex items-center space-x-2.5 pb-2 border-b border-slate-100 dark:border-slate-800">
                     <div class="w-7 h-7 rounded-lg bg-emerald-600/20 text-emerald-500 flex items-center justify-center">
                         <i class="fa-solid fa-weight-scale text-xs"></i>
                     </div>
-                    <h3 class="font-bold text-slate-900 dark:text-white text-xs md:text-sm"><span class="lang-text" data-en="BMI Calculator (Health Check)" data-np="बिएमआई क्याल्कुलेटर (स्वास्थ्य जाँच)">BMI Calculator (Health Check)</span></h3>
+                    <h3 class="font-bold text-slate-900 dark:text-white text-xs md:text-sm"><span>BMI Calculator (Health Check)</span></h3>
                 </div>
 
                 <div class="grid grid-cols-1 sm:grid-cols-3 gap-3">
                     <div>
-                        <label class="block text-[10px] font-semibold text-slate-500 dark:text-slate-400 mb-1"><span class="lang-text" data-en="Height (Feet)" data-np="उचाइ (फिट)">Height (Feet)</span></label>
+                        <label class="block text-[10px] font-semibold text-slate-500 dark:text-slate-400 mb-1"><span>Height (Feet)</span></label>
                         <input type="number" id="bmi-feet" placeholder="e.g., 5" class="w-full bg-slate-50 dark:bg-slate-800 border border-slate-200 dark:border-slate-700 rounded-xl p-2.5 text-slate-900 dark:text-white text-xs outline-none focus:border-emerald-500">
                     </div>
                     <div>
-                        <label class="block text-[10px] font-semibold text-slate-500 dark:text-slate-400 mb-1"><span class="lang-text" data-en="Height (Inches)" data-np="उचाइ (इन्च)">Height (Inches)</span></label>
+                        <label class="block text-[10px] font-semibold text-slate-500 dark:text-slate-400 mb-1"><span>Height (Inches)</span></label>
                         <input type="number" id="bmi-inch" placeholder="e.g., 10" class="w-full bg-slate-50 dark:bg-slate-800 border border-slate-200 dark:border-slate-700 rounded-xl p-2.5 text-slate-900 dark:text-white text-xs outline-none focus:border-emerald-500">
                     </div>
                     <div>
-                        <label class="block text-[10px] font-semibold text-slate-500 dark:text-slate-400 mb-1"><span class="lang-text" data-en="Weight (kg)" data-np="तौल (के.जी.)">Weight (kg)</span></label>
+                        <label class="block text-[10px] font-semibold text-slate-500 dark:text-slate-400 mb-1"><span>Weight (kg)</span></label>
                         <input type="number" id="bmi-weight" placeholder="e.g., 53" class="w-full bg-slate-50 dark:bg-slate-800 border border-slate-200 dark:border-slate-700 rounded-xl p-2.5 text-slate-900 dark:text-white text-xs outline-none focus:border-emerald-500">
                     </div>
                 </div>
 
                 <button onclick="calculateBMI()" class="w-full py-2.5 bg-emerald-600 hover:bg-emerald-700 text-white font-bold rounded-xl transition shadow-md text-xs">
-                    <span class="lang-text" data-en="Calculate BMI" data-np="बिएमआई गणना गर्नुहोस्">Calculate BMI</span>
+                    <span>Calculate BMI</span>
                 </button>
 
                 <div id="bmi-result" class="hidden p-3 bg-slate-50 dark:bg-slate-800/60 rounded-xl border border-slate-200 dark:border-slate-700 text-center space-y-1">
@@ -175,22 +175,22 @@ tailwind.config = {
                     <div class="w-7 h-7 rounded-lg bg-emerald-600/20 text-emerald-500 flex items-center justify-center">
                         <i class="fa-solid fa-cake-candles text-xs"></i>
                     </div>
-                    <h3 class="font-bold text-slate-900 dark:text-white text-xs md:text-sm"><span class="lang-text" data-en="Date & Age Calculator" data-np="उमेर तथा मिति हिसाब">Date & Age Calculator</span></h3>
+                    <h3 class="font-bold text-slate-900 dark:text-white text-xs md:text-sm"><span>Date & Age Calculator</span></h3>
                 </div>
 
                 <div class="grid grid-cols-1 sm:grid-cols-2 gap-3">
                     <div>
-                        <label class="block text-[10px] font-semibold text-slate-500 dark:text-slate-400 mb-1"><span class="lang-text" data-en="Date of Birth" data-np="जन्म मिति">Date of Birth</span></label>
+                        <label class="block text-[10px] font-semibold text-slate-500 dark:text-slate-400 mb-1"><span>Date of Birth</span></label>
                         <input type="date" id="birth-date" class="w-full bg-slate-50 dark:bg-slate-800 border border-slate-200 dark:border-slate-700 rounded-xl p-2.5 text-slate-900 dark:text-white text-xs outline-none focus:border-emerald-500">
                     </div>
                     <div>
-                        <label class="block text-[10px] font-semibold text-slate-500 dark:text-slate-400 mb-1"><span class="lang-text" data-en="Target / Current Date" data-np="हालको वा लक्षित मिति">Target / Current Date</span></label>
+                        <label class="block text-[10px] font-semibold text-slate-500 dark:text-slate-400 mb-1"><span>Target / Current Date</span></label>
                         <input type="date" id="target-date" class="w-full bg-slate-50 dark:bg-slate-800 border border-slate-200 dark:border-slate-700 rounded-xl p-2.5 text-slate-900 dark:text-white text-xs outline-none focus:border-emerald-500">
                     </div>
                 </div>
 
                 <button onclick="calculateAge()" class="w-full py-2.5 bg-emerald-600 hover:bg-emerald-700 text-white font-bold rounded-xl transition shadow-md text-xs">
-                    <span class="lang-text" data-en="Calculate Age" data-np="उमेर हिसाब गर्नुहोस्">Calculate Age</span>
+                    <span>Calculate Age</span>
                 </button>
 
                 <div id="age-result" class="hidden p-3 bg-slate-50 dark:bg-slate-800/60 rounded-xl border border-slate-200 dark:border-slate-700 text-center">
@@ -213,11 +213,6 @@ tailwind.config = {
     function updateLanguageUI() {
         const btn = document.getElementById('lang-toggle-btn');
         if(btn) btn.innerText = currentLang;
-
-        document.querySelectorAll('.lang-text').forEach(el => {
-            const text = currentLang === 'NEP' ? el.getAttribute('data-np') : el.getAttribute('data-en');
-            if(text) el.innerText = text;
-        });
     }
 
     function toggleLanguage() {
@@ -245,7 +240,6 @@ tailwind.config = {
         updateThemeUI();
     }
 
-    // १. पात्रो तथा समय अपडेट गर्ने सही फंक्सन
     function updateDynamicHeader() {
         const now = new Date();
         const daysNp = ["आइतबार", "सोमबार", "मंगलबार", "बुधबार", "बिहीबार", "शुक्रबार", "शनिबार"];
@@ -275,22 +269,18 @@ tailwind.config = {
 
     setInterval(updateDynamicHeader, 1000);
 
-    // २. BMI क्याल्कुलेटर (फिट र इन्च आधारित)
     function calculateBMI() {
         const feet = parseFloat(document.getElementById('bmi-feet').value) || 0;
         const inches = parseFloat(document.getElementById('bmi-inch').value) || 0;
         const weight = parseFloat(document.getElementById('bmi-weight').value) || 0;
 
         if (feet === 0 && inches === 0) {
-            alert(currentLang === 'NEP' ? 'कृपया उचाइ सही रूपमा भर्नुहोस्!' : 'Please enter valid height!');
             return;
         }
         if (weight <= 0) {
-            alert(currentLang === 'NEP' ? 'कृपया तौल सही रूपमा भर्नुहोस्!' : 'Please enter valid weight!');
             return;
         }
 
-        // कुल उचाइ मिटरमा रूपान्तरण (१ फिट = १२ इन्च, १ इन्च = ०.०२५४ मिटर)
         const totalInches = (feet * 12) + inches;
         const heightInMeters = totalInches * 0.0254;
 
@@ -302,32 +292,42 @@ tailwind.config = {
         resultBox.classList.remove('hidden');
         scoreText.innerText = `Your BMI: ${bmi.toFixed(1)}`;
 
+        const minHealthyWeight = 18.5 * (heightInMeters * heightInMeters);
+        const maxHealthyWeight = 24.9 * (heightInMeters * heightInMeters);
+
         let status = "";
         let colorClass = "";
+        let diffText = "";
+
         if (bmi < 18.5) {
-            status = currentLang === 'NEP' ? 'अन्डरवेट (कम तौल)' : 'Underweight';
+            let diff = (minHealthyWeight - weight).toFixed(1);
+            status = 'Underweight';
             colorClass = 'text-amber-500';
+            diffText = `💡 Need to gain at least **+${diff} kg** to reach a healthy weight.`;
         } else if (bmi >= 18.5 && bmi < 24.9) {
-            status = currentLang === 'NEP' ? 'सामान्य / हेल्दी तौल (Normal)' : 'Normal / Healthy Weight';
+            status = 'Normal / Healthy Weight';
             colorClass = 'text-emerald-500';
+            diffText = `🎉 Great! Your weight is in the healthy range.`;
         } else if (bmi >= 25 && bmi < 29.9) {
-            status = currentLang === 'NEP' ? 'ओभरवेट (बढी तौल)' : 'Overweight';
+            let diff = (weight - maxHealthyWeight).toFixed(1);
+            status = 'Overweight';
             colorClass = 'text-orange-500';
+            diffText = `💡 Need to lose at least **-${diff} kg** to reach a healthy weight.`;
         } else {
-            status = currentLang === 'NEP' ? 'मोटोपन (Obese)' : 'Obese';
+            let diff = (weight - maxHealthyWeight).toFixed(1);
+            status = 'Obese';
             colorClass = 'text-rose-500';
+            diffText = `⚠️ Need to reduce at least **-${diff} kg** for better health.`;
         }
-        statusText.className = `text-[11px] font-bold ${colorClass}`;
-        statusText.innerText = `Status: ${status}`;
+
+        statusText.innerHTML = `<span class="${colorClass} font-bold">Status: ${status}</span><br><span class="text-[10px] text-slate-400 mt-1 block">${diffText}</span>`;
     }
 
-    // ३. उमेर क्याल्कुलेटर
     function calculateAge() {
         const birthInput = document.getElementById('birth-date').value;
         const targetInput = document.getElementById('target-date').value;
 
         if (!birthInput) {
-            alert(currentLang === 'NEP' ? 'कृपया जन्म मिति छान्नुहोस्!' : 'Please select Date of Birth!');
             return;
         }
 
@@ -335,7 +335,6 @@ tailwind.config = {
         const targetDate = targetInput ? new Date(targetInput) : new Date();
 
         if (birthDate > targetDate) {
-            alert(currentLang === 'NEP' ? 'जन्म मिति हालको मितिभन्दा पछि हुन सक्दैन!' : 'Birth date cannot be after target date!');
             return;
         }
 
@@ -357,11 +356,7 @@ tailwind.config = {
         const scoreText = document.getElementById('age-score-text');
 
         ageBox.classList.remove('hidden');
-        if (currentLang === 'NEP') {
-            scoreText.innerText = `उमेर: ${years} वर्ष, ${months} महिना, र ${days} दिन`;
-        } else {
-            scoreText.innerText = `Age: ${years} Years, ${months} Months, and ${days} Days`;
-        }
+        scoreText.innerText = `Age: ${years} Years, ${months} Months, and ${days} Days`;
     }
 
     function saveProfileDetails() {
@@ -374,7 +369,6 @@ tailwind.config = {
         localStorage.setItem('profile_mobile', mobile);
 
         loadUserData();
-        alert(currentLang === 'NEP' ? 'विवरण सफलतापूर्वक सेभ भयो!' : 'Details saved successfully!');
     }
 
     function loadUserData() {
@@ -418,7 +412,6 @@ tailwind.config = {
         loadUserData();
         loadAvatar();
 
-        // डिफल्ट रूपमा आजको मिति target date मा राख्ने
         const todayStr = new Date().toISOString().split('T')[0];
         const targetDateEl = document.getElementById('target-date');
         if(targetDateEl) targetDateEl.value = todayStr;
