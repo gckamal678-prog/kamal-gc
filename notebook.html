@@ -77,6 +77,7 @@ tailwind.config = {
             <nav class="space-y-1 font-medium">
                 <a href="index.html" class="flex items-center gap-2.5 py-2.5 px-3 rounded-xl hover:bg-slate-800 text-slate-300 transition"><span>📊</span> <span class="lang-text" data-en="Overview" data-np="अवलोकन">Overview</span></a>
                 <a href="#" class="flex items-center gap-2.5 py-2.5 px-3 rounded-xl bg-emerald-600 text-white shadow-md transition"><span>📝</span> <span class="lang-text" data-en="NotePad Studio" data-np="नोटप्याड स्टुडियो">NotePad Studio</span></a>
+                <a href="#" onclick="openSecureVaultModal()" class="flex items-center gap-2.5 py-2.5 px-3 rounded-xl hover:bg-slate-800 text-slate-300 transition"><i class="fa-solid fa-lock text-emerald-400"></i> <span class="lang-text" data-en="Secure Vault" data-np="गोप्य सुरक्षा (Vault)">Secure Vault</span></a>
             </nav>
 
             <div class="space-y-2.5 bg-slate-800/50 p-3 rounded-xl border border-slate-700/60">
@@ -119,6 +120,7 @@ tailwind.config = {
             </div>
 
             <div class="flex items-center space-x-2">
+                <button onclick="openSecureVaultModal()" class="px-2.5 py-1 rounded-md bg-emerald-600/20 border border-emerald-500/40 text-[10px] font-bold text-emerald-400 hover:bg-emerald-600/30 transition flex items-center gap-1"><i class="fa-solid fa-lock"></i> Vault</button>
                 <button onclick="toggleLanguage()" id="lang-toggle-btn" class="px-2 py-1 rounded-md bg-slate-800 border border-slate-700 text-[10px] font-bold text-slate-200 hover:bg-slate-700 transition">ENG</button>
                 <button onclick="toggleTheme()" id="theme-toggle-btn" class="w-7 h-7 rounded-md bg-slate-800 border border-slate-700 flex items-center justify-center text-sm hover:bg-slate-700 transition">🌛</button>
                 <div class="relative cursor-pointer" onclick="toggleSidebar()">
@@ -153,7 +155,7 @@ tailwind.config = {
     </div>
 </div>
 
-<!-- Modal -->
+<!-- Note Modal -->
 <div id="note-modal" class="fixed inset-0 bg-slate-950/80 backdrop-blur-md z-50 flex items-center justify-center p-4 hidden">
     <div class="bg-white dark:bg-slate-900 p-6 rounded-3xl shadow-2xl w-full max-w-lg space-y-4 border border-slate-200 dark:border-slate-800">
         <div class="flex justify-between items-center">
@@ -172,8 +174,42 @@ tailwind.config = {
     </div>
 </div>
 
+<!-- SECURE VAULT MODAL (PIN & Document Camera) -->
+<div id="secure-vault-modal" class="fixed inset-0 bg-slate-950/85 backdrop-blur-md z-50 flex items-center justify-center p-4 hidden">
+    <div class="bg-slate-900 p-5 rounded-3xl shadow-2xl w-full max-w-md space-y-4 border border-slate-800 text-white">
+        <div class="flex justify-between items-center border-b border-slate-800 pb-3">
+            <h3 class="text-sm font-bold text-emerald-400 flex items-center gap-2"><i class="fa-solid fa-shield-halved"></i> व्यक्तिगत तथा गोप्य सुरक्षा (Secure Vault)</h3>
+            <button onclick="closeSecureVaultModal()" class="text-slate-400 hover:text-white text-base"><i class="fa-solid fa-xmark"></i></button>
+        </div>
+
+        <!-- PIN LOCK SCREEN -->
+        <div id="vault-lock-box" class="space-y-4 py-6 text-center">
+            <p class="text-xs text-slate-300">कृपया आफ्नो ४ अंकको पिन (PIN) हाल्नुहोस् (पूर्वनिर्धारित: 1234):</p>
+            <div class="flex justify-center">
+                <input type="password" maxlength="4" id="vault-pin-input" class="w-36 bg-slate-800 border border-slate-700 rounded-xl text-center text-xl tracking-widest py-2 text-white focus:outline-none focus:border-emerald-500" placeholder="••••">
+            </div>
+            <button onclick="unlockVaultPin()" class="px-5 py-2 bg-emerald-600 hover:bg-emerald-700 text-white text-xs font-bold rounded-xl transition shadow-md">अनलक गर्नुहोस्</button>
+        </div>
+
+        <!-- VAULT MAIN CONTENT (Shown after PIN unlock) -->
+        <div id="vault-main-content" class="space-y-3 hidden">
+            <div class="flex gap-2 border-b border-slate-800 pb-2">
+                <button onclick="switchVaultTab('notes')" id="btn-vtab-notes" class="flex-1 py-1.5 bg-emerald-600 text-white text-xs rounded-lg font-bold transition">गोप्य नोटहरू</button>
+                <button onclick="switchVaultTab('docs')" id="btn-vtab-docs" class="flex-1 py-1.5 bg-slate-800 text-slate-300 text-xs rounded-lg font-medium transition">डकुमेन्ट Vault</button>
+            </div>
+
+            <!-- Tab Body -->
+            <div id="vault-body-content" class="space-y-3 max-h-72 overflow-y-auto pr-1">
+                <!-- Dynamically loaded via JS -->
+            </div>
+        </div>
+    </div>
+</div>
+
 <script>
     let notes = JSON.parse(localStorage.getItem('digital_notebook_notes')) || [];
+    let secureNotes = JSON.parse(localStorage.getItem('digital_notebook_secure_notes')) || [];
+    let secureDocs = JSON.parse(localStorage.getItem('digital_notebook_secure_docs')) || [];
     let currentLang = localStorage.getItem('lang') || 'EN';
 
     function toggleSidebar() {
@@ -274,6 +310,122 @@ tailwind.config = {
             const img = document.getElementById(id);
             if(img) img.src = savedImage;
         });
+    }
+
+    // Secure Vault Logic
+    function openSecureVaultModal() {
+        document.getElementById('secure-vault-modal').classList.remove('hidden');
+        document.getElementById('vault-lock-box').classList.remove('hidden');
+        document.getElementById('vault-main-content').classList.add('hidden');
+        document.getElementById('vault-pin-input').value = '';
+    }
+
+    function closeSecureVaultModal() {
+        document.getElementById('secure-vault-modal').classList.add('hidden');
+    }
+
+    function unlockVaultPin() {
+        const pin = document.getElementById('vault-pin-input').value;
+        const correctPin = localStorage.getItem('vault_pin') || '1234';
+        if(pin === correctPin) {
+            document.getElementById('vault-lock-box').classList.add('hidden');
+            document.getElementById('vault-main-content').classList.remove('hidden');
+            switchVaultTab('notes');
+        } else {
+            alert('गलत पिन! कृपया फेरि प्रयास गर्नुहोस् (Default: 1234)');
+        }
+    }
+
+    function switchVaultTab(tab) {
+        const notesBtn = document.getElementById('btn-vtab-notes');
+        const docsBtn = document.getElementById('btn-vtab-docs');
+        const body = document.getElementById('vault-body-content');
+
+        if(tab === 'notes') {
+            notesBtn.className = "flex-1 py-1.5 bg-emerald-600 text-white text-xs rounded-lg font-bold transition";
+            docsBtn.className = "flex-1 py-1.5 bg-slate-800 text-slate-300 text-xs rounded-lg font-medium transition";
+            
+            body.innerHTML = `
+                <div class="space-y-2 bg-slate-800/40 p-3 rounded-xl border border-slate-700">
+                    <input type="text" id="secure-note-title" placeholder="नोटको शीर्षक..." class="w-full bg-slate-800 border border-slate-700 rounded-lg p-2 text-white text-xs outline-none">
+                    <textarea id="secure-note-desc" placeholder="तपाईंको गोप्य कुरा यहाँ लेख्नुहोस्..." class="w-full h-20 bg-slate-800 border border-slate-700 rounded-lg p-2 text-white text-xs outline-none"></textarea>
+                    <button onclick="saveSecureNote()" class="w-full py-2 bg-emerald-600 hover:bg-emerald-700 text-white font-bold rounded-lg text-xs transition">गोप्य नोट सेभ गर्नुहोस्</button>
+                </div>
+                <div class="space-y-2 mt-3" id="secure-notes-list">
+                    ${secureNotes.map(n => `
+                        <div class="bg-slate-800 p-2.5 rounded-xl border border-slate-700 flex justify-between items-start">
+                            <div>
+                                <h5 class="font-bold text-emerald-400 text-xs">${n.title}</h5>
+                                <p class="text-slate-300 text-[11px] mt-0.5">${n.content}</p>
+                            </div>
+                            <button onclick="deleteSecureNote(${n.id})" class="text-rose-400 hover:text-rose-500 text-xs"><i class="fa-solid fa-trash"></i></button>
+                        </div>
+                    `).join('')}
+                </div>
+            `;
+        } else {
+            docsBtn.className = "flex-1 py-1.5 bg-emerald-600 text-white text-xs rounded-lg font-bold transition";
+            notesBtn.className = "flex-1 py-1.5 bg-slate-800 text-slate-300 text-xs rounded-lg font-medium transition";
+
+            body.innerHTML = `
+                <div class="space-y-2 bg-slate-800/40 p-3 rounded-xl border border-slate-700">
+                    <label class="block text-[11px] font-bold text-emerald-400">📄 कागजातको फोटो खिच्नुहोस् / अपलोड गर्नुहोस्</label>
+                    <input type="file" accept="image/*" capture="environment" id="doc-file-input" class="w-full text-xs text-slate-300 file:mr-2 file:py-1.5 file:px-3 file:rounded-lg file:border-0 file:text-[10px] file:font-bold file:bg-emerald-600 file:text-white">
+                    <input type="text" id="doc-title-input" placeholder="कागजातको नाम (जस्तै: नागरिकता, लाइसेन्स)" class="w-full bg-slate-800 border border-slate-700 rounded-lg p-2 text-white text-xs outline-none">
+                    <button onclick="saveSecureDoc()" class="w-full py-2 bg-emerald-600 hover:bg-emerald-700 text-white font-bold rounded-lg text-xs transition">कागजात सुरक्षित गर्नुहोस्</button>
+                </div>
+                <div class="space-y-2 mt-3 grid grid-cols-2 gap-2" id="secure-docs-list">
+                    ${secureDocs.map(d => `
+                        <div class="bg-slate-800 p-2 rounded-xl border border-slate-700 flex flex-col justify-between space-y-2">
+                            <div>
+                                <img src="${d.image}" alt="Doc" class="w-full h-24 object-cover rounded-lg border border-slate-700 mb-1">
+                                <h5 class="font-bold text-xs truncate text-white">${d.title}</h5>
+                            </div>
+                            <button onclick="deleteSecureDoc(${d.id})" class="w-full py-1 bg-rose-600/20 hover:bg-rose-600 text-rose-400 hover:text-white rounded text-[10px] font-bold transition">डिलिट</button>
+                        </div>
+                    `).join('')}
+                </div>
+            `;
+        }
+    }
+
+    function saveSecureNote() {
+        const title = document.getElementById('secure-note-title').value.trim();
+        const content = document.getElementById('secure-note-desc').value.trim();
+        if(!title && !content) return;
+
+        secureNotes.unshift({id: Date.now(), title: title || 'Untitled', content});
+        localStorage.setItem('digital_notebook_secure_notes', JSON.stringify(secureNotes));
+        switchVaultTab('notes');
+    }
+
+    function deleteSecureNote(id) {
+        secureNotes = secureNotes.filter(n => n.id !== id);
+        localStorage.setItem('digital_notebook_secure_notes', JSON.stringify(secureNotes));
+        switchVaultTab('notes');
+    }
+
+    function saveSecureDoc() {
+        const title = document.getElementById('doc-title-input').value.trim();
+        const fileInput = document.getElementById('doc-file-input');
+        if(!fileInput.files[0]) {
+            alert('कृपया कागजातको फोटो चयन गर्नुहोस्!');
+            return;
+        }
+
+        const reader = new FileReader();
+        reader.onload = function(e) {
+            secureDocs.unshift({id: Date.now(), title: title || 'Document', image: e.target.result});
+            localStorage.setItem('digital_notebook_secure_docs', JSON.stringify(secureDocs));
+            switchVaultTab('docs');
+        };
+        reader.readAsDataURL(fileInput.files[0]);
+    }
+
+    function deleteSecureDoc(id) {
+        secureDocs = secureDocs.filter(d => d.id !== id);
+        localStorage.setItem('digital_notebook_secure_docs', JSON.stringify(secureDocs));
+        switchVaultTab('docs');
     }
 
     function openNoteModal(id = null) {
