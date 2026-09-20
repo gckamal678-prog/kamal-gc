@@ -3,18 +3,31 @@
 <head>
 <meta charset="UTF-8">
 <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no">
-<title>Digital NoteBook - Account & Data Management</title>
+<title>Digital NoteBook</title>
+<meta name="apple-mobile-web-app-capable" content="yes">
+<meta name="apple-mobile-web-app-status-bar-style" content="black-translucent">
+<meta name="apple-mobile-web-app-title" content="NoteBook">
+<meta http-equiv="Cache-Control" content="no-cache, no-store, must-revalidate">
+<meta http-equiv="Pragma" content="no-cache">
+<meta http-equiv="Expires" content="0">
+<meta http-equiv="Content-Security-Policy" content="upgrade-insecure-requests">
+
 <script src="https://cdn.tailwindcss.com"></script>
-<!-- Firebase App (core) and Firebase Auth -->
-<script src="https://www.gstatic.com/firebasejs/8.10.1/firebase-app.js"></script>
-<script src="https://www.gstatic.com/firebasejs/8.10.1/firebase-auth.js"></script>
 <script>
 tailwind.config = {
     darkMode: 'class',
     theme: {
         extend: {
             fontFamily: {
-                sans: ['Poppins', 'sans-serif'],
+                sans: ['Inter', 'sans-serif'],
+            },
+            colors: {
+                mint: {
+                    50: '#ecfdf5',
+                    500: '#10b981',
+                    600: '#059669',
+                    400: '#34d399',
+                }
             }
         }
     }
@@ -29,52 +42,100 @@ tailwind.config = {
     }
 </script>
 <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
-<link href="https://fonts.googleapis.com/css2?family=Poppins:wght@400;500;600;700&display=swap" rel="stylesheet">
+<link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700;800&display=swap" rel="stylesheet">
+<link rel="manifest" href="manifest.json"> 
 <style>
     @keyframes pulseGlow {
         0%, 100% { opacity: 1; filter: drop-shadow(0 0 2px rgba(16, 185, 129, 0.4)); }
         50% { opacity: 0.8; filter: drop-shadow(0 0 10px rgba(16, 185, 129, 0.8)); }
     }
     .animated-title { animation: pulseGlow 3s infinite ease-in-out; }
+    @keyframes spinSlow { from { transform: rotate(0deg); } to { transform: rotate(360deg); } }
+    .animate-spin-slow { animation: spinSlow 8s linear infinite; }
 </style>
 </head>
-<body class="bg-slate-100 dark:bg-slate-950 text-slate-800 dark:text-slate-100 text-xs">
+<body class="bg-slate-100 dark:bg-slate-950 text-slate-800 dark:text-slate-100 text-xs font-sans">
 
-<!-- TOAST NOTIFICATION CONTAINER -->
-<div id="toast-container" class="fixed bottom-5 right-5 z-50 flex flex-col space-y-2"></div>
-
-<!-- MASTER RESET MODAL -->
-<div id="reset-modal" class="fixed inset-0 bg-black/60 backdrop-blur-sm z-50 flex items-center justify-center hidden p-4">
-    <div class="bg-white dark:bg-slate-900 border border-slate-200 dark:border-slate-800 rounded-2xl p-6 w-full max-w-md shadow-2xl space-y-4">
-        <h3 class="text-base font-bold text-red-600 dark:text-red-500 flex items-center gap-2">
-            <i class="fa-solid fa-triangle-exclamation"></i> <span data-i18n="reset_title">Master Reset Confirm</span>
-        </h3>
-        <p class="text-xs text-slate-600 dark:text-slate-400" data-i18n="reset_desc">
-            तपाईंको सम्पूर्ण डाटा मेटिनेछ। पुष्टि गर्न 'RESET' टाइप गर्नुहोस् र पिन (PIN) प्रविष्ट गर्नुहोस्:
-        </p>
-        <div class="space-y-3">
-            <input type="text" id="reset-input" placeholder="Type RESET here" class="w-full p-2.5 text-xs bg-slate-100 dark:bg-slate-800 border border-slate-300 dark:border-slate-700 rounded-xl outline-none text-slate-900 dark:text-white">
-            <input type="password" id="reset-pin" placeholder="Enter 6-digit PIN" maxlength="6" class="w-full p-2.5 text-xs bg-slate-100 dark:bg-slate-800 border border-slate-300 dark:border-slate-700 rounded-xl outline-none text-slate-900 dark:text-white">
+<!-- SECURITY LOCK SCREEN (MPIN & Biometric) -->
+<div id="security-lock-screen" class="fixed inset-0 bg-slate-950 z-[100] flex flex-col items-center justify-center p-4 hidden">
+    <div class="max-w-sm w-full bg-slate-900 border border-slate-800 p-6 rounded-3xl shadow-2xl space-y-6 text-white text-center">
+        <div class="w-16 h-16 mx-auto rounded-2xl bg-emerald-500/10 border border-emerald-500/30 flex items-center justify-center text-emerald-400 text-2xl">
+            🔒
         </div>
-        <div class="flex gap-2 justify-end pt-2">
-            <button onclick="closeResetModal()" class="px-4 py-2 bg-slate-200 dark:bg-slate-800 text-xs font-semibold rounded-xl hover:bg-slate-300" data-i18n="btn_cancel">Cancel</button>
-            <button onclick="confirmMasterReset()" class="px-4 py-2 bg-red-600 text-white text-xs font-semibold rounded-xl hover:bg-red-700" data-i18n="btn_reset_system">Reset System</button>
+        <div class="space-y-1">
+            <h2 id="lock-title" class="text-base font-bold text-emerald-400">App Is Locked</h2>
+            <p id="lock-subtitle" class="text-xs text-slate-400">Enter your 4-digit MPIN or use Biometric</p>
+        </div>
+
+        <div class="flex justify-center gap-3 py-2">
+            <div class="w-4 h-4 rounded-full border-2 border-emerald-500 bg-slate-800 pin-dot" id="dot-0"></div>
+            <div class="w-4 h-4 rounded-full border-2 border-emerald-500 bg-slate-800 pin-dot" id="dot-1"></div>
+            <div class="w-4 h-4 rounded-full border-2 border-emerald-500 bg-slate-800 pin-dot" id="dot-2"></div>
+            <div class="w-4 h-4 rounded-full border-2 border-emerald-500 bg-slate-800 pin-dot" id="dot-3"></div>
+        </div>
+
+        <div id="biometric-container" class="hidden">
+            <button onclick="triggerBiometricAuth()" class="w-full py-3 bg-emerald-500/25 hover:bg-emerald-500/30 border border-emerald-500/40 rounded-xl font-bold text-xs text-emerald-300 flex items-center justify-center gap-2 transition">
+                <i class="fa-solid fa-fingerprint text-lg"></i> <span id="biometric-btn-text">Use Fingerprint / FaceID</span>
+            </button>
+        </div>
+
+        <div class="grid grid-cols-3 gap-3 pt-2">
+            <button onclick="pressPinKey('1')" class="py-3 bg-slate-800 hover:bg-slate-700 rounded-xl font-bold text-sm transition">1</button>
+            <button onclick="pressPinKey('2')" class="py-3 bg-slate-800 hover:bg-slate-700 rounded-xl font-bold text-sm transition">2</button>
+            <button onclick="pressPinKey('3')" class="py-3 bg-slate-800 hover:bg-slate-700 rounded-xl font-bold text-sm transition">3</button>
+            <button onclick="pressPinKey('4')" class="py-3 bg-slate-800 hover:bg-slate-700 rounded-xl font-bold text-sm transition">4</button>
+            <button onclick="pressPinKey('5')" class="py-3 bg-slate-800 hover:bg-slate-700 rounded-xl font-bold text-sm transition">5</button>
+            <button onclick="pressPinKey('6')" class="py-3 bg-slate-800 hover:bg-slate-700 rounded-xl font-bold text-sm transition">6</button>
+            <button onclick="pressPinKey('7')" class="py-3 bg-slate-800 hover:bg-slate-700 rounded-xl font-bold text-sm transition">7</button>
+            <button onclick="pressPinKey('8')" class="py-3 bg-slate-800 hover:bg-slate-700 rounded-xl font-bold text-sm transition">8</button>
+            <button onclick="pressPinKey('9')" class="py-3 bg-slate-800 hover:bg-slate-700 rounded-xl font-bold text-sm transition">9</button>
+            <button onclick="clearPinKey()" class="py-3 bg-slate-800/50 hover:bg-slate-800 rounded-xl font-bold text-xs text-rose-400 transition">Clear</button>
+            <button onclick="pressPinKey('0')" class="py-3 bg-slate-800 hover:bg-slate-700 rounded-xl font-bold text-sm transition">0</button>
+            <button onclick="deletePinKey()" class="py-3 bg-slate-800/50 hover:bg-slate-800 rounded-xl font-bold text-xs text-slate-300 transition">⌫</button>
+        </div>
+    </div>
+</div>
+
+<!-- WELCOME SPLASH SCREEN -->
+<div id="splash-screen" class="fixed inset-0 bg-slate-950 z-50 flex flex-col items-center justify-center text-white transition-opacity duration-700 overflow-hidden select-none">
+    <div class="absolute inset-0 bg-[linear-gradient(to_right,#065f4615_1px,transparent_1px),linear-gradient(to_bottom,#065f4615_1px,transparent_1px)] bg-[size:3rem_3rem] pointer-events-none"></div>
+    <div class="relative z-10 text-center space-y-6 max-w-sm px-6">
+        <div class="flex justify-center">
+            <div class="relative">
+                <div class="absolute -inset-1 rounded-full bg-gradient-to-r from-emerald-500 to-teal-400 opacity-75 blur-sm animate-spin-slow"></div>
+                <div class="relative w-20 h-20 rounded-full bg-slate-900/90 border-2 border-emerald-500/60 p-2 shadow-2xl flex items-center justify-center backdrop-blur-md overflow-hidden">
+                    <img src="N1024.png" alt="Logo" class="w-full h-full object-cover rounded-full" onerror="this.src='https://via.placeholder.com/150'">
+                </div>
+            </div>
+        </div>
+        <div class="space-y-2">
+            <p class="text-emerald-400 text-[11px] font-mono tracking-widest uppercase flex items-center justify-center gap-1">
+                <span class="w-1.5 h-1.5 rounded-full bg-emerald-400 animate-pulse"></span> System Initializing...
+            </p>
+            <h1 id="typing-title" class="text-xl font-extrabold tracking-wider bg-clip-text text-transparent bg-gradient-to-r from-emerald-300 via-teal-200 to-white font-mono h-8"></h1>
+        </div>
+        <div class="space-y-1.5 w-48 mx-auto">
+            <div class="flex justify-between text-[10px] font-mono text-emerald-400/80">
+                <span>LOADING</span><span id="load-percent">0%</span>
+            </div>
+            <div class="w-full h-1 bg-slate-800 rounded-full overflow-hidden p-[1px] border border-emerald-500/20">
+                <div id="progress-bar" class="h-full bg-gradient-to-r from-emerald-500 to-teal-300 rounded-full transition-all duration-100" style="width: 0%;"></div>
+            </div>
         </div>
     </div>
 </div>
 
 <div class="flex min-h-screen w-full">
-    
     <!-- SIDEBAR SECTION -->
     <div id="sidebar" class="fixed inset-y-0 left-0 z-50 w-72 bg-slate-900 border-r border-slate-800 transform -translate-x-full transition-transform duration-300 flex flex-col text-white">
-        
         <div class="flex items-center justify-between px-4 py-3 border-b border-slate-800">
             <div class="flex items-center space-x-2.5">
                 <div class="w-8 h-8 rounded-lg bg-emerald-600 border border-emerald-500 flex items-center justify-center overflow-hidden shadow-md">
-                    <img src="N1024.png" alt="Logo" class="w-full h-full object-cover">
+                    <img src="N1024.png" alt="Logo" class="w-full h-full object-cover" onerror="this.src='https://via.placeholder.com/150'">
                 </div>
                 <div>
-                    <h1 class="text-sm font-extrabold tracking-wide text-transparent bg-clip-text bg-gradient-to-r from-white via-emerald-300 to-cyan-500">
+                    <h1 class="text-sm font-extrabold tracking-wide text-transparent bg-clip-text bg-gradient-to-r from-white via-emerald-300 to-teal-400">
                         Digital <span class="text-emerald-400">NoteBook</span>
                     </h1>
                 </div>
@@ -84,31 +145,72 @@ tailwind.config = {
 
         <div class="p-3 space-y-3 overflow-y-auto flex-1 text-xs">
             <div class="bg-slate-800/50 border border-slate-700/60 rounded-xl p-3 flex items-center space-x-3">
-                <div class="w-11 h-11 rounded-full bg-emerald-600 border border-emerald-500 flex items-center justify-center overflow-hidden shadow-sm">
-                    <img id="sidebar-avatar-img" src="N1024.png" alt="Profile" class="w-full h-full object-cover">
+                <div class="relative cursor-pointer group" onclick="document.getElementById('avatar-upload-input').click()">
+                    <div class="w-11 h-11 rounded-full bg-emerald-600 border border-emerald-500 flex items-center justify-center overflow-hidden shadow-sm">
+                        <img id="sidebar-avatar-img" src="N1024.png" alt="Profile" class="w-full h-full object-cover" onerror="this.src='https://via.placeholder.com/150'">
+                    </div>
                 </div>
+                <input type="file" id="avatar-upload-input" accept="image/*" class="hidden" onchange="handleAvatarUpload(event)">
                 <div>
-                    <h3 id="sidebar-profile-name" class="text-white font-bold text-sm">User</h3>
-                    <p class="text-[10px] text-slate-400" id="sidebar-user-email">Local User</p>
+                    <h3 id="sidebar-profile-name" class="text-white font-bold text-sm"></h3>
+                    <p class="text-[10px] text-slate-400">Click icon to set photo</p>
                 </div>
             </div>
 
             <nav class="space-y-1 font-medium">
-                <a href="index.html" class="flex items-center gap-2.5 py-2.5 px-3 rounded-xl hover:bg-slate-800 text-slate-300 transition"><span>📊</span> <span class="lang-text" data-en="Overview" data-np="अवलोकन">Overview</span></a>
-                <a href="account.html" class="flex items-center gap-2.5 py-2.5 px-3 rounded-xl bg-emerald-600 text-white shadow-md shadow-emerald-600/20 transition"><span>⚙️</span> <span class="lang-text" data-en="Account & Backup" data-np="खाता र ब्याकअप">Account & Backup</span></a>
+                <a href="index.html" class="flex items-center gap-2.5 py-2.5 px-3 rounded-xl bg-emerald-600 text-white shadow-md shadow-emerald-600/20 transition"><span>📊</span> <span class="lang-text" data-en="Overview" data-np="अवलोकन">Overview</span></a>
+                <a href="account.html" class="flex items-center gap-2.5 py-2.5 px-3 rounded-xl bg-slate-800 hover:bg-slate-700 text-slate-200 transition"><span>👤</span> <span class="lang-text" data-en="Account & Backup" data-np="खाता र ब्याकअप">Account & Backup</span></a>
             </nav>
+
+            <div class="space-y-2.5 bg-slate-800/50 p-3 rounded-xl border border-slate-700/60">
+                <h3 class="text-[11px] font-bold text-white flex items-center gap-1.5 mb-1">
+                    <i class="fa-solid fa-address-card text-emerald-400"></i> <span class="lang-text" data-en="Personal Info" data-np="व्यक्तिगत विवरण">Personal Info</span>
+                </h3>
+                <div>
+                    <label class="block text-[10px] font-semibold text-slate-400 mb-0.5"><span class="lang-text" data-en="Full Name" data-np="पूरा नाम">Full Name</span></label>
+                    <input type="text" id="input-full-name" placeholder="Enter Full Name" class="w-full bg-slate-800 border border-slate-700 rounded-lg px-2.5 py-2 text-white text-xs focus:outline-none focus:border-emerald-500">
+                </div>
+                <div>
+                    <label class="block text-[10px] font-semibold text-slate-400 mb-0.5"><span class="lang-text" data-en="Email" data-np="इमेल">Email</span></label>
+                    <input type="email" id="input-email" placeholder="Enter Email Address" class="w-full bg-slate-800 border border-slate-700 rounded-lg px-2.5 py-2 text-white text-xs focus:outline-none focus:border-emerald-500">
+                </div>
+                <div>
+                    <label class="block text-[10px] font-semibold text-slate-400 mb-0.5"><span class="lang-text" data-en="Address" data-np="ठेगाना">Address</span></label>
+                    <input type="text" id="input-address" placeholder="Enter Address" class="w-full bg-slate-800 border border-slate-700 rounded-lg px-2.5 py-2 text-white text-xs focus:outline-none focus:border-emerald-500">
+                </div>
+                <div>
+                    <label class="block text-[10px] font-semibold text-slate-400 mb-0.5"><span class="lang-text" data-en="Mobile Number" data-np="मोबाइल नम्बर">Mobile Number</span></label>
+                    <input type="tel" id="input-mobile" placeholder="Enter Mobile Number" class="w-full bg-slate-800 border border-slate-700 rounded-lg px-2.5 py-2 text-white text-xs focus:outline-none focus:border-emerald-500">
+                </div>
+                <button onclick="saveProfileDetails()" class="w-full py-2 bg-emerald-600 hover:bg-emerald-700 text-white font-bold rounded-lg transition shadow-md">
+                    <span class="lang-text" data-en="Save Info" data-np="सेभ गर्नुहोस्">Save Info</span>
+                </button>
+            </div>
+
+            <div class="space-y-2 bg-slate-800/50 p-3 rounded-xl border border-slate-700/60">
+                <h3 class="text-[11px] font-bold text-white flex items-center gap-1.5 mb-1">
+                    <i class="fa-solid fa-cloud text-emerald-400"></i> <span class="lang-text" data-en="Cloud Sync" data-np="क्लाउड सिंक">Cloud Sync</span>
+                </h3>
+                <div class="flex gap-2">
+                    <button onclick="handleCloudBackup()" class="flex-1 py-1.5 bg-emerald-600 hover:bg-emerald-700 text-white font-bold rounded-lg transition text-[10px]">
+                        <span class="lang-text" data-en="Backup" data-np="ब्याकअप">Backup</span>
+                    </button>
+                    <button onclick="handleCloudRestore()" class="flex-1 py-1.5 bg-teal-600 hover:bg-teal-700 text-white font-bold rounded-lg transition text-[10px]">
+                        <span class="lang-text" data-en="Restore" data-np="पुनः भण्डारण">Restore</span>
+                    </button>
+                </div>
+            </div>
         </div>
     </div>
 
     <div class="flex-1 flex flex-col w-full">
-        
         <!-- HEADER SECTION -->
-        <header class="sticky top-0 z-40 flex items-center justify-between px-3 md:px-5 py-3.5 bg-slate-900/95 backdrop-blur border-b border-emerald-500/20 shadow-md">
+        <header id="top-controls-area" class="sticky top-0 z-30 flex items-center justify-between px-3 md:px-5 py-3.5 bg-slate-900/95 backdrop-blur border-b border-emerald-500/20 shadow-md">
             <div class="flex items-center space-x-2.5">
                 <button onclick="toggleSidebar()" class="text-white text-xl focus:outline-none hover:text-emerald-400 transition">☰</button>
                 <div class="flex items-center space-x-2 cursor-pointer" onclick="toggleSidebar()">
                     <div class="w-7 h-7 rounded-lg bg-emerald-600 border border-emerald-500/50 flex items-center justify-center overflow-hidden shadow-sm">
-                        <img src="N1024.png" alt="Logo" class="w-full h-full object-cover">
+                        <img src="N1024.png" alt="Logo" class="w-full h-full object-cover" onerror="this.src='https://via.placeholder.com/150'">
                     </div>
                     <span class="text-xs md:text-sm font-extrabold tracking-wider bg-gradient-to-r from-emerald-400 via-teal-300 to-cyan-400 bg-clip-text text-transparent">
                         Digital NoteBook
@@ -121,202 +223,297 @@ tailwind.config = {
                 <button onclick="toggleTheme()" id="theme-toggle-btn" class="w-7 h-7 rounded-md bg-slate-800 border border-slate-700 flex items-center justify-center text-sm hover:bg-slate-700 transition">🌛</button>
                 <div class="relative cursor-pointer" onclick="toggleSidebar()">
                     <div class="w-8 h-8 rounded-full bg-emerald-600 border border-emerald-500 flex items-center justify-center overflow-hidden shadow-sm">
-                        <img id="header-avatar-img" src="N1024.png" alt="Profile" class="w-full h-full object-cover">
+                        <img id="header-avatar-img" src="N1024.png" alt="Profile" class="w-full h-full object-cover" onerror="this.src='https://via.placeholder.com/150'">
                     </div>
                 </div>
             </div>
         </header>
 
-        <!-- MAIN CONTENT AREA -->
-        <main class="p-4 space-y-4 flex-1 w-full max-w-xl mx-auto overflow-y-auto">
+        <main class="p-4 md:p-6 space-y-4 flex-1 w-full text-xs">
+            <div class="flex justify-between items-start px-1 py-1 text-white">
+                <div>
+                    <p id="dynamic-date" class="text-[11px] font-semibold tracking-wider text-emerald-500 dark:text-emerald-400 uppercase mb-1"></p>
+                    <h2 id="dynamic-greeting" class="text-base md:text-lg font-bold text-slate-800 dark:text-white tracking-tight"></h2>
+                    <p class="text-xs text-slate-500 dark:text-slate-400 mt-0.5"><span class="lang-text" data-en="Here is what is happening with your money today." data-np="आज तपाईंको पैसाको स्थिति यहाँ छ।">Here is what is happening with your money today.</span></p>
+                </div>
+                <a href="qrscan.html" class="bg-white dark:bg-slate-900 p-1.5 rounded-lg border border-slate-200 dark:border-slate-800 shadow-sm flex flex-col items-center shrink-0 hover:border-emerald-500 transition">
+                    <div class="w-12 h-12 bg-white flex items-center justify-center p-0.5 rounded">
+                        <img src="N1024.png" alt="QR Code" class="w-full h-full object-contain" onerror="this.src='https://via.placeholder.com/150'">
+                    </div>
+                    <span class="text-[9px] text-slate-400 mt-0.5 font-medium"><span class="lang-text" data-en="QR Scan" data-np="क्यूआर स्क्यान">QR Scan</span></span>
+                </a>
+            </div>
+
+            <!-- FINANCIAL SUMMARIES -->
+            <div id="summary-cards-area" class="grid grid-cols-3 gap-2 text-center pt-2 bg-slate-200/30 dark:bg-slate-900/40 p-3 rounded-xl border border-slate-200 dark:border-slate-800/80">
+                <div class="flex flex-col items-center p-1 bg-slate-800/40 rounded-lg border border-slate-700/50">
+                    <span class="text-lg mb-0.5">💵</span>
+                    <span class="text-[10px] font-semibold text-emerald-400 truncate w-full"><span class="lang-text" data-en="Total Income" data-np="कुल आम्दानी">Total Income</span></span>
+                    <span id="summary-income" class="text-sm md:text-base font-extrabold text-slate-800 dark:text-slate-100 mt-0.5">Rs 0</span>
+                </div>
+                <div class="flex flex-col items-center p-1 bg-slate-800/40 rounded-lg border border-slate-700/50">
+                    <span class="text-lg mb-0.5">📈</span>
+                    <span class="text-[10px] font-semibold text-teal-400 truncate w-full"><span class="lang-text" data-en="Total Expense" data-np="कुल खर्च">Total Expense</span></span>
+                    <span id="summary-expenses" class="text-sm md:text-base font-extrabold text-slate-800 dark:text-slate-100 mt-0.5">Rs 0</span>
+                </div>
+                <div class="flex flex-col items-center p-1 bg-slate-800/40 rounded-lg border border-slate-700/50">
+                    <span class="text-lg mb-0.5">🏦</span>
+                    <span class="text-[10px] font-semibold text-amber-400 truncate w-full"><span class="lang-text" data-en="Total Saving" data-np="कुल बचत">Total Saving</span></span>
+                    <span id="summary-saving" class="text-sm md:text-base font-extrabold text-slate-800 dark:text-slate-100 mt-0.5">Rs 0</span>
+                </div>
+                <div class="flex flex-col items-center p-1 bg-slate-800/40 rounded-lg border border-slate-700/50">
+                    <span class="text-lg mb-0.5">📥</span>
+                    <span class="text-[10px] font-semibold text-cyan-400 truncate w-full"><span class="lang-text" data-en="Total Receivable" data-np="पाउनुपर्ने">Total Receivable</span></span>
+                    <span id="summary-receivable" class="text-sm md:text-base font-extrabold text-slate-800 dark:text-slate-100 mt-0.5">Rs 0</span>
+                </div>
+                <div class="flex flex-col items-center p-1 bg-slate-800/40 rounded-lg border border-slate-700/50">
+                    <span class="text-lg mb-0.5">📤</span>
+                    <span class="text-[10px] font-semibold text-rose-400 truncate w-full"><span class="lang-text" data-en="Total Giveble" data-np="दिनुपर्ने">Total Giveble</span></span>
+                    <span id="summary-payable" class="text-sm md:text-base font-extrabold text-slate-800 dark:text-slate-100 mt-0.5">Rs 0</span>
+                </div>
+                <div class="flex flex-col items-center p-1 bg-emerald-950/40 rounded-lg border border-emerald-500/40">
+                    <span class="text-lg mb-0.5">💰</span>
+                    <span class="text-[10px] font-semibold text-emerald-300 truncate w-full"><span class="lang-text" data-en="Net Balance" data-np="खुद बचत">Net Balance</span></span>
+                    <span id="summary-net-balance" class="text-sm md:text-base font-extrabold text-emerald-400 mt-0.5">Rs 0</span>
+                </div>
+            </div>
+
+            <hr class="border-slate-200 dark:border-slate-800 my-2">
             
-            <!-- Header & Back Button -->
-            <div class="flex items-center justify-between bg-white dark:bg-slate-900 border border-slate-200 dark:border-slate-800 p-4 rounded-2xl shadow-sm">
-                <h1 class="text-base font-bold text-emerald-600 dark:text-emerald-400" data-translate="accountSettingsTitle">Account Management</h1>
-                <a href="index.html" class="px-3 py-1.5 bg-slate-100 dark:bg-slate-800 hover:bg-slate-200 dark:hover:bg-slate-700 text-xs rounded-xl font-medium transition text-slate-800 dark:text-white" data-translate="backToDashboard">Back to Dashboard</a>
+            <!-- BANNER ADS SECTION -->
+            <div id="custom-banner-ad" class="mt-4 w-full overflow-hidden rounded-xl border border-slate-200 dark:border-slate-800 shadow-lg bg-slate-900">
+                <a href="https://kids.kamalgc.com.np" target="_blank" class="block w-full h-full">
+                    <video src="bannerads.mp4" autoplay loop muted playsinline class="w-full h-auto object-cover rounded-xl pointer-events-none"></video>
+                </a>
             </div>
 
-            <!-- 1. BACKUP & DATA MANAGEMENT SECTION -->
-            <div class="bg-white dark:bg-slate-900 p-5 rounded-2xl shadow-sm space-y-3 border border-slate-200 dark:border-slate-800">
-                <h3 class="text-sm font-bold text-slate-900 dark:text-slate-100 flex items-center gap-2">
-                    <i class="fa-solid fa-database text-emerald-500"></i> <span data-i18n="data_management">Data Management & Backup</span>
-                </h3>
-                <div class="grid grid-cols-1 md:grid-cols-2 gap-2">
-                    <button onclick="backupData()" class="w-full bg-emerald-600 hover:bg-emerald-700 text-white font-medium p-2.5 rounded-xl text-xs transition flex items-center justify-center gap-2 shadow-md">
-                        <i class="fa-solid fa-download"></i> <span data-i18n="btn_backup">Backup JSON</span>
-                    </button>
-                    <label class="w-full bg-blue-600 hover:bg-blue-700 text-white font-medium p-2.5 rounded-xl text-xs transition flex items-center justify-center gap-2 cursor-pointer shadow-md">
-                        <i class="fa-solid fa-upload"></i> <span data-i18n="btn_restore">Restore JSON</span>
-                        <input type="file" id="restore-file" onchange="restoreData(event)" class="hidden" accept=".json">
-                    </label>
+            <!-- QUICK ACTIONS -->
+            <div id="quick-action-area" class="space-y-2">
+                <div class="grid grid-cols-3 gap-2 text-center">
+                    <a href="add-transaction.html" class="flex flex-col items-center p-2 rounded-xl bg-slate-200/50 dark:bg-slate-900/65 cursor-pointer hover:bg-slate-200 dark:hover:bg-slate-900 transition">
+                        <span class="text-base mb-1">💳</span>
+                        <span class="text-[11px] font-medium text-slate-700 dark:text-slate-300"><span class="lang-text" data-en="Add transaction" data-np="कारोबार थप्नुहोस्">Add transaction</span></span>
+                    </a>
+                    <a href="add-income.html" class="flex flex-col items-center p-2 rounded-xl bg-slate-200/50 dark:bg-slate-900/65 cursor-pointer hover:bg-slate-200 dark:hover:bg-slate-900 transition">
+                        <span class="text-base mb-1">💰</span>
+                        <span class="text-[11px] font-medium text-slate-700 dark:text-slate-300"><span class="lang-text" data-en="Add Income" data-np="आम्दानी थप्नुहोस्">Add Income</span></span>
+                    </a>
+                    <a href="add-saving.html" class="flex flex-col items-center p-2 rounded-xl bg-slate-200/50 dark:bg-slate-900/65 cursor-pointer hover:bg-slate-200 dark:hover:bg-slate-900 transition">
+                        <span class="text-base mb-1">🏦</span>
+                        <span class="text-[11px] font-medium text-slate-700 dark:text-slate-300"><span class="lang-text" data-en="Add Saving" data-np="बचत थप्नुहोस्">Add Saving</span></span>
+                    </a>
+                </div>
+
+                <div class="grid grid-cols-3 gap-2 text-center">
+                    <a href="calculate.html" class="flex flex-col items-center p-2 rounded-xl bg-slate-200/50 dark:bg-slate-900/65 cursor-pointer hover:bg-slate-200 dark:hover:bg-slate-900 transition">
+                        <span class="text-base mb-1">🧮</span>
+                        <span class="text-[11px] font-medium text-slate-700 dark:text-slate-300"><span class="lang-text" data-en="Calculate" data-np="हिसाब गर्नुहोस्">Calculate</span></span>
+                    </a>
+                    <a href="notebook.html" class="flex flex-col items-center p-2 rounded-xl bg-slate-200/50 dark:bg-slate-900/65 cursor-pointer hover:bg-slate-200 dark:hover:bg-slate-900 transition">
+                        <span class="text-base mb-1">📓</span>
+                        <span class="text-[11px] font-medium text-slate-700 dark:text-slate-300"><span class="lang-text" data-en="Notebook" data-np="नोटबुक">Notebook</span></span>
+                    </a>
+                    <a href="calendar.html" class="flex flex-col items-center p-2 rounded-xl bg-slate-200/50 dark:bg-slate-900/65 cursor-pointer hover:bg-slate-200 dark:hover:bg-slate-900 transition">
+                        <span class="text-base mb-1">📅</span>
+                        <span class="text-[11px] font-medium text-slate-700 dark:text-slate-300"><span class="lang-text" data-en="Calendar" data-np="पात्रो">Calendar</span></span>
+                    </a>
+                </div>
+
+                <div class="grid grid-cols-2 gap-2 text-center">
+                    <a href="setting.html" class="flex flex-col items-center p-2.5 rounded-xl bg-slate-200/50 dark:bg-slate-900/65 cursor-pointer hover:bg-slate-200 dark:hover:bg-slate-900 transition">
+                        <span class="text-base mb-1">⚙️</span>
+                        <span class="text-[11px] font-medium text-slate-700 dark:text-slate-300"><span class="lang-text" data-en="Setting" data-np="सेटिङ">Setting</span></span>
+                    </a>
+                    <a href="account.html" class="flex flex-col items-center p-2.5 rounded-xl bg-slate-200/50 dark:bg-slate-900/65 cursor-pointer hover:bg-slate-200 dark:hover:bg-slate-900 transition">
+                        <span class="text-base mb-1">👤</span>
+                        <span class="text-[11px] font-medium text-slate-700 dark:text-slate-300"><span class="lang-text" data-en="Account" data-np="खाता">Account</span></span>
+                    </a>
                 </div>
             </div>
-
-            <!-- 2. Profile & Device Info Card -->
-            <div class="bg-white dark:bg-slate-900 border border-slate-200 dark:border-slate-800 p-5 rounded-2xl shadow-sm space-y-4">
-                <h2 class="text-sm font-bold text-slate-800 dark:text-slate-300 border-b border-slate-200 dark:border-slate-800 pb-2" data-translate="profileDeviceTitle">Profile & Device Info</h2>
-                <div class="space-y-2 text-xs">
-                    <p class="text-slate-500 dark:text-slate-400">Email: <span id="user-email-display" class="text-slate-900 dark:text-white font-medium">Loading...</span></p>
-                    <p class="text-slate-500 dark:text-slate-400">Device/Browser: <span id="device-info-display" class="text-slate-900 dark:text-white font-medium">Loading...</span></p>
-                </div>
-                <button onclick="handleLogout()" class="w-full py-2.5 bg-rose-600/20 hover:bg-rose-600 text-rose-600 hover:text-white border border-rose-600/30 rounded-xl font-bold text-xs transition" data-translate="logoutBtn">
-                    Log Out
-                </button>
-            </div>
-
-            <!-- 3. Change Password Card -->
-            <div class="bg-white dark:bg-slate-900 border border-slate-200 dark:border-slate-800 p-5 rounded-2xl shadow-sm space-y-4">
-                <h2 class="text-sm font-bold text-slate-800 dark:text-slate-300 border-b border-slate-200 dark:border-slate-800 pb-2" data-translate="changePasswordTitle">Change Password</h2>
-                <div class="space-y-3">
-                    <input type="password" id="new-password" data-translate-placeholder="newPasswordPlaceholder" placeholder="Enter new password" class="w-full p-2.5 bg-slate-100 dark:bg-slate-800 border border-slate-300 dark:border-slate-700 rounded-xl text-xs text-slate-900 dark:text-white focus:outline-none focus:border-emerald-500">
-                    <button onclick="handleChangePassword()" class="w-full py-2.5 bg-blue-600 hover:bg-blue-500 text-white rounded-xl font-bold text-xs transition" data-translate="updatePasswordBtn">
-                        Update Password
-                    </button>
-                </div>
-            </div>
-
-            <!-- 4. SECURITY & LOCK SETTINGS (6-DIGIT PIN & FINGERPRINT ON/OFF) -->
-            <div class="bg-white dark:bg-slate-900 p-5 rounded-2xl shadow-sm border border-slate-200 dark:border-slate-800 space-y-4">
-                <h3 class="text-sm font-bold text-slate-900 dark:text-slate-100 flex items-center gap-2">
-                    <i class="fa-solid fa-shield-halved text-emerald-500"></i> <span class="lang-text" data-en="Security & Lock Settings" data-np="सुरक्षा र लक सेटिंग्स">Security & Lock Settings</span>
-                </h3>
-                <div class="grid grid-cols-1 gap-4">
-                    <div class="p-4 rounded-xl bg-slate-50 dark:bg-slate-800/50 border border-slate-200 dark:border-slate-700 space-y-3">
-                        <div class="flex items-center justify-between">
-                            <div>
-                                <h4 class="font-bold text-xs text-slate-800 dark:text-white"><span class="lang-text" data-en="App 6-Digit PIN Lock" data-np="एप ६-अंकको पिन लक">App 6-Digit PIN Lock</span></h4>
-                                <p class="text-[10px] text-slate-500 dark:text-slate-400"><span class="lang-text" data-en="Secure your app with a 6-digit PIN before entering dashboard" data-np="ड्यासबोर्ड प्रवेश गर्नुअघि ६-अंकको पिन कोड प्रयोग गरेर एप सुरक्षित गर्नुहोस्">Secure your app with a 6-digit PIN before entering dashboard</span></p>
-                            </div>
-                            <label class="relative inline-flex items-center cursor-pointer">
-                                <input type="checkbox" id="pin-lock-toggle" onchange="togglePinLockSetting(this)" class="sr-only peer">
-                                <div class="w-9 h-5 bg-slate-300 peer-focus:outline-none rounded-full peer dark:bg-slate-700 peer-checked:after:translate-x-full peer-checked:after:border-white after:content-[''] after:absolute after:top-[2px] after:left-[2px] after:bg-white after:border-slate-300 after:border after:rounded-full after:h-4 after:w-4 after:transition-all peer-checked:bg-emerald-600"></div>
-                            </label>
-                        </div>
-                        <div id="pin-setup-box" class="hidden space-y-3 pt-2 border-t border-slate-200 dark:border-slate-700">
-                            <input type="password" id="new-app-pin" placeholder="Enter 6-digit PIN" maxlength="6" class="w-full p-2 text-xs bg-white dark:bg-slate-900 border border-slate-300 dark:border-slate-700 rounded-lg outline-none">
-                            <button onclick="saveAppPin()" class="w-full py-1.5 bg-emerald-600 hover:bg-emerald-700 text-white rounded-lg text-xs font-semibold"><span class="lang-text" data-en="Save PIN" data-np="पिन सेभ गर्नुहोस्">Save PIN</span></button>
-                        </div>
-                    </div>
-                </div>
-            </div>
-
-            <!-- Biometric Security Toggle Section -->
-            <div class="bg-white dark:bg-slate-900 border border-slate-200 dark:border-slate-800 p-5 rounded-2xl shadow-sm space-y-3">
-                <div class="flex items-center justify-between">
-                    <div>
-                        <h3 class="font-bold text-sm text-slate-900 dark:text-slate-100 flex items-center gap-2">
-                            <i class="fa-solid fa-fingerprint text-emerald-500"></i> Biometric Lock (Fingerprint / FaceID)
-                        </h3>
-                        <p class="text-[10px] text-slate-500 dark:text-slate-400">Enable or disable biometric authentication login lock.</p>
-                    </div>
-                    <label class="relative inline-flex items-center cursor-pointer">
-                        <input type="checkbox" id="biometric-toggle-switch" onchange="toggleBiometricSetting(this)" class="sr-only peer">
-                        <div class="w-9 h-5 bg-slate-300 peer-focus:outline-none rounded-full peer dark:bg-slate-700 peer-checked:after:translate-x-full peer-checked:after:border-white after:content-[''] after:absolute after:top-[2px] after:left-[2px] after:bg-white after:border-slate-300 after:border after:rounded-full after:h-4 after:w-4 after:transition-all peer-checked:bg-emerald-600"></div>
-                    </label>
-                </div>
-            </div>
-
-            <!-- 5. DANGER ZONE -->
-            <div class="bg-white dark:bg-slate-900 border border-rose-900/40 p-5 rounded-2xl shadow-sm space-y-4">
-                <h2 class="text-sm font-bold text-rose-600 dark:text-rose-400 border-b border-rose-900/30 pb-2" data-translate="dangerZoneTitle">Danger Zone</h2>
-                <div class="space-y-2">
-                    <p class="text-[11px] text-slate-500 dark:text-slate-400">सबै डाटा मेटाएर फ्याक्ट्री रिसेट गर्नुहोस्:</p>
-                    <button onclick="openResetModal()" class="w-full bg-red-600 hover:bg-red-700 text-white font-medium p-2.5 rounded-xl text-xs transition flex items-center justify-center gap-2 shadow-md">
-                        <i class="fa-solid fa-triangle-exclamation"></i> <span data-i18n="btn_reset">Master Reset</span>
-                    </button>
-                </div>
-            </div>
-
         </main>
     </div>
 </div>
 
-<script>
+<!-- FIREBASE SCRIPT -->
+<script type="module">
+    import { initializeApp } from "https://www.gstatic.com/firebasejs/10.8.0/firebase-app.js";
+    import { getDatabase, ref, set, get, child } from "https://www.gstatic.com/firebasejs/10.8.0/firebase-database.js";
+
     const firebaseConfig = {
       apiKey: "AIzaSyDDY_v7RHnkCTI6uyV4DNDjqoaIBGweg8c",
       authDomain: "digital-a2552.firebaseapp.com",
       projectId: "digital-a2552",
+      databaseURL: "https://digital-a2552-default-rtdb.asia-southeast1.firebasedatabase.app",
       storageBucket: "digital-a2552.firebasestorage.app",
       messagingSenderId: "218135618179",
       appId: "1:218135618179:web:821b76920d3e5669ac31b6"
     };
-    if (!firebase.apps.length) {
-        firebase.initializeApp(firebaseConfig);
+
+    const app = initializeApp(firebaseConfig);
+    const db = getDatabase(app);
+
+    async function backupToCloud(userId = "default_user") {
+        try {
+            const localData = {
+                notes: JSON.parse(localStorage.getItem('advanced_notebook_notes') || localStorage.getItem('notes') || '[]'),
+                incomes: JSON.parse(localStorage.getItem('digital_notebook_incomes') || localStorage.getItem('incomes') || '[]'),
+                savings: JSON.parse(localStorage.getItem('digital_notebook_savings') || localStorage.getItem('savings') || '[]'),
+                transactions: JSON.parse(localStorage.getItem('digital_notebook_transactions') || localStorage.getItem('transactions') || '[]'),
+                theme: localStorage.getItem('theme') || 'dark',
+                language: localStorage.getItem('language') || 'en',
+                updatedAt: new Date().toISOString()
+            };
+            await set(ref(db, 'users/' + userId), localData);
+            return { success: true };
+        } catch (error) {
+            return { success: false };
+        }
     }
-    const auth = firebase.auth();
+
+    async function restoreFromCloud(userId = "default_user") {
+        try {
+            const dbRef = ref(db);
+            const snapshot = await get(child(dbRef, `users/${userId}`));
+            if (snapshot.exists()) {
+                const data = snapshot.val();
+                if (data.notes) localStorage.setItem('advanced_notebook_notes', JSON.stringify(data.notes));
+                if (data.incomes) localStorage.setItem('digital_notebook_incomes', JSON.stringify(data.incomes));
+                if (data.savings) localStorage.setItem('digital_notebook_savings', JSON.stringify(data.savings));
+                if (data.transactions) localStorage.setItem('digital_notebook_transactions', JSON.stringify(data.transactions));
+                if (data.theme) localStorage.setItem('theme', data.theme);
+                return { success: true };
+            }
+            return { success: false };
+        } catch (error) {
+            return { success: false };
+        }
+    }
+
+    window.handleCloudBackup = async function() {
+        let userId = localStorage.getItem('my_unique_userid') || "default_user";
+        await backupToCloud(userId);
+    };
+
+    window.handleCloudRestore = async function() {
+        let userId = localStorage.getItem('my_unique_userid') || "default_user";
+        const result = await restoreFromCloud(userId);
+        if(result.success) location.reload();
+    };
+</script>
+
+<!-- APPLICATION LOGIC SCRIPT -->
+<script>
+    let currentEnteredPin = "";
+    
+    function checkSecurityLock() {
+        const savedPin = localStorage.getItem('app_mpin');
+        const savedBiometric = localStorage.getItem('app_biometric');
+        const lockScreen = document.getElementById('security-lock-screen');
+        
+        if ((savedPin && savedPin.length === 4) || savedBiometric === 'enabled') {
+            lockScreen.classList.remove('hidden');
+            if (savedBiometric === 'enabled') {
+                document.getElementById('biometric-container').classList.remove('hidden');
+                setTimeout(() => { triggerBiometricAuth(); }, 300);
+            } else {
+                document.getElementById('biometric-container').classList.add('hidden');
+            }
+        } else {
+            lockScreen.classList.add('hidden');
+        }
+    }
+
+    window.pressPinKey = function(digit) {
+        if (currentEnteredPin.length < 4) {
+            currentEnteredPin += digit;
+            updatePinDots();
+            if (currentEnteredPin.length === 4) {
+                verifyEnteredPin();
+            }
+        }
+    }
+
+    window.deletePinKey = function() {
+        if (currentEnteredPin.length > 0) {
+            currentEnteredPin = currentEnteredPin.slice(0, -1);
+            updatePinDots();
+        }
+    }
+
+    window.clearPinKey = function() {
+        currentEnteredPin = "";
+        updatePinDots();
+    }
+
+    function updatePinDots() {
+        for (let i = 0; i < 4; i++) {
+            const dot = document.getElementById(`dot-${i}`);
+            if (i < currentEnteredPin.length) {
+                dot.classList.add('bg-emerald-500');
+                dot.classList.remove('bg-slate-800');
+            } else {
+                dot.classList.remove('bg-emerald-500');
+                dot.classList.add('bg-slate-800');
+            }
+        }
+    }
+
+    function verifyEnteredPin() {
+        const savedPin = localStorage.getItem('app_mpin') || '1234';
+        if (currentEnteredPin === savedPin) {
+            document.getElementById('security-lock-screen').classList.add('hidden');
+            currentEnteredPin = "";
+            updatePinDots();
+        } else {
+            currentEnteredPin = "";
+            updatePinDots();
+        }
+    }
+
+    window.triggerBiometricAuth = async function() {
+        try {
+            if (window.navigator.credentials) {
+                const credential = await window.navigator.credentials.get({
+                    publicKey: {
+                        challenge: new Uint8Array([1,2,3,4,5,6,7,8]),
+                        timeout: 60000,
+                        userVerification: "required"
+                    }
+                });
+                if (credential) {
+                    document.getElementById('security-lock-screen').classList.add('hidden');
+                    currentEnteredPin = "";
+                    updatePinDots();
+                }
+            }
+        } catch (error) {
+            console.log("Biometric auth cancelled", error);
+        }
+    }
+
+    let currentLang = localStorage.getItem('userLang') || localStorage.getItem('lang') || 'en';
 
     function toggleSidebar() {
         const sidebar = document.getElementById('sidebar');
         if (sidebar) sidebar.classList.toggle('-translate-x-full');
     }
 
-    let currentLang = localStorage.getItem('lang') || 'EN';
-
-    const translations = {
-        EN: {
-            reset_title: "Master Reset Confirm",
-            reset_desc: "All your data will be permanently deleted. Type 'RESET' and enter your 6-digit PIN to confirm:",
-            btn_cancel: "Cancel",
-            btn_reset_system: "Reset System",
-            data_management: "Data Management & Backup",
-            btn_backup: "Backup JSON",
-            btn_restore: "Restore JSON",
-            btn_reset: "Master Reset",
-            accountSettingsTitle: "Account Management",
-            backToDashboard: "Back to Dashboard",
-            profileDeviceTitle: "Profile & Device Info",
-            logoutBtn: "Log Out",
-            changePasswordTitle: "Change Password",
-            updatePasswordBtn: "Update Password",
-            dangerZoneTitle: "Danger Zone: System Reset"
-        },
-        NEP: {
-            reset_title: "मास्टर रिसेट पुष्टि",
-            reset_desc: "तपाईंको सम्पूर्ण डाटा मेटिनेछ। पुष्टि गर्न 'RESET' टाइप गर्नुहोस् र ६-अंकको पिन (PIN) प्रविष्ट गर्नुहोस्:",
-            btn_cancel: "रद्द गर्नुहोस्",
-            btn_reset_system: "सिस्टम रिसेट गर्नुहोस्",
-            data_management: "डाटा व्यवस्थापन र ब्याकअप",
-            btn_backup: "ब्याकअप JSON",
-            btn_restore: "पुनः भण्डारण JSON",
-            btn_reset: "मास्टर रिसेट",
-            accountSettingsTitle: "अकाउन्ट व्यवस्थापन",
-            backToDashboard: "ड्यासबोर्डमा फर्कनुहोस्",
-            profileDeviceTitle: "प्रोफाइल र डिभाइस जानकारी",
-            logoutBtn: "लग आउट गर्नुहोस्",
-            changePasswordTitle: "पासवर्ड परिवर्तन गर्नुहोस्",
-            updatePasswordBtn: "पासवर्ड अपडेट गर्नुहोस्",
-            dangerZoneTitle: "खतरा क्षेत्र: सिस्टम रिसेट"
-        }
-    };
-
     function updateLanguageUI() {
         const btn = document.getElementById('lang-toggle-btn');
-        if(btn) btn.innerText = currentLang;
+        if(btn) btn.innerText = currentLang.toUpperCase();
 
         document.querySelectorAll('.lang-text').forEach(el => {
-            const text = currentLang === 'NEP' ? el.getAttribute('data-np') : el.getAttribute('data-en');
+            const text = currentLang === 'np' ? el.getAttribute('data-np') : el.getAttribute('data-en');
             if(text) el.innerText = text;
-        });
-
-        document.querySelectorAll('[data-i18n]').forEach(el => {
-            const key = el.getAttribute('data-i18n');
-            if (translations[currentLang] && translations[currentLang][key]) {
-                el.innerText = translations[currentLang][key];
-            }
-        });
-
-        document.querySelectorAll('[data-translate]').forEach(el => {
-            const key = el.getAttribute('data-translate');
-            if (translations[currentLang] && translations[currentLang][key]) {
-                el.innerText = translations[currentLang][key];
-            }
         });
     }
 
     function toggleLanguage() {
-        currentLang = currentLang === 'EN' ? 'NEP' : 'EN';
+        currentLang = currentLang === 'en' ? 'np' : 'en';
+        localStorage.setItem('userLang', currentLang);
         localStorage.setItem('lang', currentLang);
         updateLanguageUI();
+        updateDynamicHeader();
     }
 
     function updateThemeUI() {
@@ -337,169 +534,162 @@ tailwind.config = {
         updateThemeUI();
     }
 
-    function showToast(message, type = 'success') {
-        const container = document.getElementById('toast-container');
-        if(!container) return;
-        const toast = document.createElement('div');
-        const bgColor = type === 'success' ? 'bg-emerald-600' : 'bg-rose-600';
-        toast.className = `${bgColor} text-white px-4 py-2.5 rounded-xl shadow-lg text-xs font-semibold transform transition-all duration-300 translate-y-2 opacity-0 flex items-center gap-2`;
-        toast.innerHTML = `<span>${type === 'success' ? '✅' : '⚠️'}</span> <span>${message}</span>`;
-        container.appendChild(toast);
-        setTimeout(() => toast.classList.remove('translate-y-2', 'opacity-0'), 50);
-        setTimeout(() => {
-            toast.classList.add('translate-y-2', 'opacity-0');
-            setTimeout(() => toast.remove(), 300);
-        }, 3000);
-    }
+    function updateDynamicHeader() {
+        const now = new Date();
+        const options = { weekday: 'long', year: 'numeric', month: 'long', day: 'numeric' };
+        const dateString = now.toLocaleDateString(currentLang === 'np' ? 'ne-NP' : 'en-US', options).toUpperCase();
+        const timeString = now.toLocaleTimeString('en-US', { hour: '2-digit', minute: '2-digit', second: '2-digit', hour12: true });
 
-    auth.onAuthStateChanged((user) => {
-        if (user) {
-            document.getElementById('user-email-display').innerText = user.email;
-            document.getElementById('sidebar-user-email').innerText = user.email;
-            document.getElementById('device-info-display').innerText = navigator.userAgent;
-        } else {
-            window.location.href = 'index.html';
-        }
-    });
+        const dateEl = document.getElementById('dynamic-date');
+        if (dateEl) dateEl.innerText = `${dateString} | ${timeString}`;
 
-    function handleLogout() {
-        auth.signOut().then(() => {
-            window.location.href = 'index.html';
-        }).catch((error) => {
-            showToast("Error: " + error.message, 'error');
-        });
-    }
-
-    function handleChangePassword() {
-        const newPassword = document.getElementById('new-password').value;
-        const user = auth.currentUser;
-
-        if (!newPassword || newPassword.length < 6) {
-            showToast("Password must be at least 6 characters long.", 'error');
-            return;
+        const hours = now.getHours();
+        let greetingText = currentLang === 'np' ? 'शुभ प्रभात' : 'Good morning';
+        if (hours >= 12 && hours < 17) {
+            greetingText = currentLang === 'np' ? 'शुभ दिन' : 'Good afternoon';
+        } else if (hours >= 17) {
+            greetingText = currentLang === 'np' ? 'शुभ साँझ' : 'Good evening';
         }
 
-        user.updatePassword(newPassword).then(() => {
-            showToast("Password successfully updated.");
-            document.getElementById('new-password').value = '';
-        }).catch((error) => {
-            showToast("Error: Please re-login to update password.", 'error');
-        });
-    }
-
-    function togglePinLockSetting(checkbox) {
-        const box = document.getElementById('pin-setup-box');
-        if (checkbox.checked) {
-            box.classList.remove('hidden');
-        } else {
-            box.classList.add('hidden');
-            localStorage.removeItem('app_pin_lock');
-            showToast(currentLang === 'NEP' ? 'पिन लक बन्द भयो!' : 'PIN Lock disabled!', 'success');
+        const savedName = localStorage.getItem('profile_name') || localStorage.getItem('user_profile_name') || '';
+        const greetingEl = document.getElementById('dynamic-greeting');
+        if (greetingEl) {
+            greetingEl.innerText = savedName ? `${greetingText}, ${savedName}` : greetingText;
         }
     }
 
-    function saveAppPin() {
-        const pin = document.getElementById('new-app-pin').value.trim();
-        if (pin.length !== 6) {
-            showToast(currentLang === 'NEP' ? 'कृपया ६ अंकको पिन राख्नुहोस्!' : 'Please enter a 6-digit PIN!', 'error');
-            return;
-        }
-        localStorage.setItem('app_pin_lock', pin);
-        showToast(currentLang === 'NEP' ? 'पिन सफलतापूर्वक सेभ भयो!' : 'PIN saved successfully!', 'success');
-    }
+    setInterval(updateDynamicHeader, 1000);
 
-    // Biometric Toggle Logic
-    function toggleBiometricSetting(checkbox) {
-        if (checkbox.checked) {
-            localStorage.setItem('app_biometric', 'enabled');
-            showToast("Biometric lock enabled successfully!", 'success');
-        } else {
-            localStorage.setItem('app_biometric', 'disabled');
-            showToast("Biometric lock disabled.", 'success');
-        }
-    }
+    function updateSummaryCards() {
+        const incomes = JSON.parse(localStorage.getItem('digital_notebook_incomes') || localStorage.getItem('incomes') || '[]');
+        const totalIncome = incomes.reduce((sum, item) => sum + Number(item.amount || item.incomeAmount || 0), 0);
+        if(document.getElementById('summary-income')) document.getElementById('summary-income').innerText = `Rs ${totalIncome.toLocaleString()}`;
 
-    function backupData() {
-        const allData = {};
-        for (let i = 0; i < localStorage.length; i++) {
-            const key = localStorage.key(i);
-            allData[key] = localStorage.getItem(key);
-        }
-        const dataStr = "data:text/json;charset=utf-8," + encodeURIComponent(JSON.stringify(allData, null, 2));
-        const downloadAnchor = document.createElement('a');
-        downloadAnchor.setAttribute("href", dataStr);
-        downloadAnchor.setAttribute("download", `digital_notebook_backup_${new Date().toISOString().split('T')[0]}.json`);
-        document.body.appendChild(downloadAnchor);
-        downloadAnchor.click();
-        downloadAnchor.remove();
-        showToast('ब्याकअप फाइल डाउनलोड भयो!', 'success');
-    }
+        const savings = JSON.parse(localStorage.getItem('digital_notebook_savings') || localStorage.getItem('savings') || '[]');
+        const totalSaving = savings.reduce((sum, item) => sum + Number(item.amount || item.savingAmount || 0), 0);
+        if(document.getElementById('summary-saving')) document.getElementById('summary-saving').innerText = `Rs ${totalSaving.toLocaleString()}`;
 
-    function restoreData(event) {
-        const file = event.target.files[0];
-        if (!file) return;
-        const reader = new FileReader();
-        reader.onload = function(e) {
-            try {
-                const data = JSON.parse(e.target.result);
-                for (const key in data) {
-                    localStorage.setItem(key, data[key]);
-                }
-                showToast('डाटा सफलतापूर्वक पुनर्स्थापना भयो!', 'success');
-                setTimeout(() => location.reload(), 1000);
-            } catch (err) {
-                showToast('अमान्य ब्याकअप फाइल!', 'error');
+        const transactions = JSON.parse(localStorage.getItem('digital_notebook_transactions') || localStorage.getItem('transactions') || '[]');
+        let totalExpense = 0, totalReceivable = 0, totalPayable = 0;
+        
+        transactions.forEach(tx => {
+            const amt = Number(tx.amount || tx.txAmount || 0);
+            const tType = String(tx.type || tx.category || '').toLowerCase();
+            if (tType.includes('expense') || tType.includes('खर्च')) {
+                totalExpense += amt;
+            } else if (tType.includes('receive') || tType.includes('पाउनुपर्ने')) {
+                totalReceivable += amt;
+            } else {
+                totalPayable += amt;
             }
-        };
-        reader.readAsText(file);
+        });
+
+        const netBalance = (totalIncome + totalReceivable) - (totalExpense + totalPayable);
+
+        if(document.getElementById('summary-expenses')) document.getElementById('summary-expenses').innerText = `Rs ${totalExpense.toLocaleString()}`;
+        if(document.getElementById('summary-receivable')) document.getElementById('summary-receivable').innerText = `Rs ${totalReceivable.toLocaleString()}`;
+        if(document.getElementById('summary-payable')) document.getElementById('summary-payable').innerText = `Rs ${totalPayable.toLocaleString()}`;
+        if(document.getElementById('summary-net-balance')) document.getElementById('summary-net-balance').innerText = `Rs ${netBalance.toLocaleString()}`;
     }
 
-    function openResetModal() {
-        document.getElementById('reset-modal').classList.remove('hidden');
-    }
+    function saveProfileDetails() {
+        const name = document.getElementById('input-full-name').value;
+        const email = document.getElementById('input-email').value;
+        const address = document.getElementById('input-address').value;
+        const mobile = document.getElementById('input-mobile').value;
 
-    function closeResetModal() {
-        document.getElementById('reset-modal').classList.add('hidden');
-    }
-
-    function confirmMasterReset() {
-        const textVal = document.getElementById('reset-input').value.trim();
-        const pinVal = document.getElementById('reset-pin').value.trim();
-        const savedPin = localStorage.getItem('app_pin_lock') || '123456';
-
-        if (textVal !== 'RESET') {
-            showToast("कृपया 'RESET' टाइप गर्नुहोस्!", 'error');
-            return;
+        if(name) {
+            localStorage.setItem('profile_name', name);
+            localStorage.setItem('user_profile_name', name);
         }
+        localStorage.setItem('profile_email', email);
+        localStorage.setItem('profile_address', address);
+        localStorage.setItem('profile_mobile', mobile);
 
-        if (pinVal !== savedPin && pinVal !== '') {
-            showToast("गलत पिन (PIN)!", 'error');
-            return;
+        loadUserData();
+        updateDynamicHeader();
+    }
+
+    function loadUserData() {
+        const savedName = localStorage.getItem('profile_name') || localStorage.getItem('user_profile_name') || '';
+        const savedEmail = localStorage.getItem('profile_email') || '';
+        const savedAddress = localStorage.getItem('profile_address') || '';
+        const savedMobile = localStorage.getItem('profile_mobile') || '';
+
+        if(document.getElementById('input-full-name')) document.getElementById('input-full-name').value = savedName;
+        if(document.getElementById('input-email')) document.getElementById('input-email').value = savedEmail;
+        if(document.getElementById('input-address')) document.getElementById('input-address').value = savedAddress;
+        if(document.getElementById('input-mobile')) document.getElementById('input-mobile').value = savedMobile;
+
+        const nameEl = document.getElementById('sidebar-profile-name');
+        if(nameEl) nameEl.innerText = savedName;
+    }
+
+    function handleAvatarUpload(event) {
+        const file = event.target.files[0];
+        if (file) {
+            const reader = new FileReader();
+            reader.onload = function(e) {
+                localStorage.setItem('profile_avatar', e.target.result);
+                loadAvatar();
+            };
+            reader.readAsDataURL(file);
         }
+    }
 
-        localStorage.clear();
-        showToast('सिस्टम सफलतापूर्वक रिसेट भयो!', 'success');
-        setTimeout(() => location.reload(), 1000);
+    function loadAvatar() {
+        const savedImage = localStorage.getItem('profile_avatar') || 'N1024.png';
+        ['sidebar-avatar-img', 'header-avatar-img'].forEach(id => {
+            const img = document.getElementById(id);
+            if(img) {
+                img.src = savedImage;
+                img.classList.remove('hidden');
+            }
+        });
     }
 
     document.addEventListener("DOMContentLoaded", () => {
         updateLanguageUI();
         updateThemeUI();
-        
-        // Load PIN Lock status
-        const savedPin = localStorage.getItem('app_pin_lock');
-        if (savedPin) {
-            document.getElementById('pin-lock-toggle').checked = true;
-            document.getElementById('pin-setup-box').classList.remove('hidden');
-            document.getElementById('new-app-pin').value = savedPin;
+        updateDynamicHeader();
+        loadUserData();
+        loadAvatar();
+        updateSummaryCards();
+        checkSecurityLock();
+
+        const text = "DIGITAL NOTEBOOK";
+        const typingElement = document.getElementById("typing-title");
+        const progressBar = document.getElementById("progress-bar");
+        const loadPercent = document.getElementById("load-percent");
+
+        let i = 0;
+        function typeWriter() {
+            if (i < text.length) {
+                typingElement.textContent += text.charAt(i);
+                i++;
+                setTimeout(typeWriter, 70);
+            }
         }
 
-        // Load Biometric Toggle status
-        const bioStatus = localStorage.getItem('app_biometric');
-        const toggleSwitch = document.getElementById('biometric-toggle-switch');
-        if (toggleSwitch) {
-            toggleSwitch.checked = (bioStatus === 'enabled');
-        }
+        let progress = 0;
+        const loadingInterval = setInterval(() => {
+            progress += 5;
+            if (progress >= 100) {
+                progress = 100;
+                clearInterval(loadingInterval);
+                setTimeout(() => {
+                    const splash = document.getElementById('splash-screen');
+                    if (splash) {
+                        splash.style.opacity = '0';
+                        setTimeout(() => splash.remove(), 700);
+                    }
+                }, 400);
+            }
+            progressBar.style.width = progress + '%';
+            loadPercent.textContent = progress + '%';
+        }, 50);
+
+        setTimeout(typeWriter, 200);
     });
 </script>
 </body>
