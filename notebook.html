@@ -174,7 +174,7 @@ tailwind.config = {
     </div>
 </div>
 
-<!-- SECURE VAULT MODAL (PIN & Document Camera) -->
+<!-- SECURE VAULT MODAL (PIN, Tabs & Change PIN) -->
 <div id="secure-vault-modal" class="fixed inset-0 bg-slate-950/85 backdrop-blur-md z-50 flex items-center justify-center p-4 hidden">
     <div class="bg-slate-900 p-5 rounded-3xl shadow-2xl w-full max-w-md space-y-4 border border-slate-800 text-white">
         <div class="flex justify-between items-center border-b border-slate-800 pb-3">
@@ -193,9 +193,10 @@ tailwind.config = {
 
         <!-- VAULT MAIN CONTENT (Shown after PIN unlock) -->
         <div id="vault-main-content" class="space-y-3 hidden">
-            <div class="flex gap-2 border-b border-slate-800 pb-2">
-                <button onclick="switchVaultTab('notes')" id="btn-vtab-notes" class="flex-1 py-1.5 bg-emerald-600 text-white text-xs rounded-lg font-bold transition">गोप्य नोटहरू</button>
-                <button onclick="switchVaultTab('docs')" id="btn-vtab-docs" class="flex-1 py-1.5 bg-slate-800 text-slate-300 text-xs rounded-lg font-medium transition">डकुमेन्ट Vault</button>
+            <div class="flex gap-1.5 border-b border-slate-800 pb-2">
+                <button onclick="switchVaultTab('notes')" id="btn-vtab-notes" class="flex-1 py-1.5 bg-emerald-600 text-white text-[11px] rounded-lg font-bold transition">गोप्य नोटहरू</button>
+                <button onclick="switchVaultTab('docs')" id="btn-vtab-docs" class="flex-1 py-1.5 bg-slate-800 text-slate-300 text-[11px] rounded-lg font-medium transition">डकुमेन्ट</button>
+                <button onclick="switchVaultTab('settings')" id="btn-vtab-settings" class="py-1.5 px-3 bg-slate-800 text-slate-300 text-[11px] rounded-lg font-medium transition"><i class="fa-solid fa-gear"></i></button>
             </div>
 
             <!-- Tab Body -->
@@ -339,12 +340,16 @@ tailwind.config = {
     function switchVaultTab(tab) {
         const notesBtn = document.getElementById('btn-vtab-notes');
         const docsBtn = document.getElementById('btn-vtab-docs');
+        const settingsBtn = document.getElementById('btn-vtab-settings');
         const body = document.getElementById('vault-body-content');
 
+        // Reset button styles
+        notesBtn.className = "flex-1 py-1.5 bg-slate-800 text-slate-300 text-[11px] rounded-lg font-medium transition";
+        docsBtn.className = "flex-1 py-1.5 bg-slate-800 text-slate-300 text-[11px] rounded-lg font-medium transition";
+        settingsBtn.className = "py-1.5 px-3 bg-slate-800 text-slate-300 text-[11px] rounded-lg font-medium transition";
+
         if(tab === 'notes') {
-            notesBtn.className = "flex-1 py-1.5 bg-emerald-600 text-white text-xs rounded-lg font-bold transition";
-            docsBtn.className = "flex-1 py-1.5 bg-slate-800 text-slate-300 text-xs rounded-lg font-medium transition";
-            
+            notesBtn.className = "flex-1 py-1.5 bg-emerald-600 text-white text-[11px] rounded-lg font-bold transition";
             body.innerHTML = `
                 <div class="space-y-2 bg-slate-800/40 p-3 rounded-xl border border-slate-700">
                     <input type="text" id="secure-note-title" placeholder="नोटको शीर्षक..." class="w-full bg-slate-800 border border-slate-700 rounded-lg p-2 text-white text-xs outline-none">
@@ -363,10 +368,8 @@ tailwind.config = {
                     `).join('')}
                 </div>
             `;
-        } else {
-            docsBtn.className = "flex-1 py-1.5 bg-emerald-600 text-white text-xs rounded-lg font-bold transition";
-            notesBtn.className = "flex-1 py-1.5 bg-slate-800 text-slate-300 text-xs rounded-lg font-medium transition";
-
+        } else if(tab === 'docs') {
+            docsBtn.className = "flex-1 py-1.5 bg-emerald-600 text-white text-[11px] rounded-lg font-bold transition";
             body.innerHTML = `
                 <div class="space-y-2 bg-slate-800/40 p-3 rounded-xl border border-slate-700">
                     <label class="block text-[11px] font-bold text-emerald-400">📄 कागजातको फोटो खिच्नुहोस् / अपलोड गर्नुहोस्</label>
@@ -386,7 +389,42 @@ tailwind.config = {
                     `).join('')}
                 </div>
             `;
+        } else if(tab === 'settings') {
+            settingsBtn.className = "py-1.5 px-3 bg-emerald-600 text-white text-[11px] rounded-lg font-bold transition";
+            body.innerHTML = `
+                <div class="space-y-3 bg-slate-800/40 p-3 rounded-xl border border-slate-700">
+                    <h5 class="font-bold text-emerald-400 text-xs"><i class="fa-solid fa-key"></i> पिन कोड परिवर्तन गर्नुहोस् (Change PIN)</h5>
+                    <div>
+                        <label class="block text-[10px] text-slate-400 mb-1">पुरानो पिन (Old PIN)</label>
+                        <input type="password" maxlength="4" id="old-pin" placeholder="••••" class="w-full bg-slate-800 border border-slate-700 rounded-lg p-2 text-white text-xs outline-none">
+                    </div>
+                    <div>
+                        <label class="block text-[10px] text-slate-400 mb-1">नयाँ पिन (New 4-Digit PIN)</label>
+                        <input type="password" maxlength="4" id="new-pin" placeholder="••••" class="w-full bg-slate-800 border border-slate-700 rounded-lg p-2 text-white text-xs outline-none">
+                    </div>
+                    <button onclick="changeVaultPin()" class="w-full py-2 bg-emerald-600 hover:bg-emerald-700 text-white font-bold rounded-lg text-xs transition shadow-md">पिन अपडेट गर्नुहोस्</button>
+                </div>
+            `;
         }
+    }
+
+    function changeVaultPin() {
+        const oldPin = document.getElementById('old-pin').value;
+        const newPin = document.getElementById('new-pin').value;
+        const currentSavedPin = localStorage.getItem('vault_pin') || '1234';
+
+        if(oldPin !== currentSavedPin) {
+            alert('पुरानो पिन मिलेन!');
+            return;
+        }
+        if(newPin.length !== 4) {
+            alert('नयाँ पिन ठ ακ्कै ४ अंकको हुनुपर्छ!');
+            return;
+        }
+
+        localStorage.setItem('vault_pin', newPin);
+        alert('पिन सफलतापूर्वक परिवर्तन भयो!');
+        switchVaultTab('notes');
     }
 
     function saveSecureNote() {
