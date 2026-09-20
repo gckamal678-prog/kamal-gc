@@ -27,6 +27,8 @@ tailwind.config = {
 </script>
 <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
 <link href="https://fonts.googleapis.com/css2?family=Poppins:wght@400;500;600;700&display=swap" rel="stylesheet">
+<!-- नेपाली मिति कन्भर्ट गर्ने आधिकारिक लाइब्रेरी -->
+<script src="https://cdn.jsdelivr.net/npm/nepali-date-converter@3.4.0/dist/nepali-date-converter.umd.js"></script>
 </head>
 <body class="bg-slate-100 dark:bg-slate-950 text-slate-800 dark:text-slate-100 text-xs flex flex-col h-screen overflow-hidden select-none">
 
@@ -122,45 +124,75 @@ tailwind.config = {
         <!-- MAIN CONTENT AREA -->
         <main class="p-4 md:p-6 space-y-4 flex-1 w-full overflow-y-auto">
             
-            <!-- 1. LIVE CALENDAR & TIME -->
+            <!-- 1. NEPALI CALENDAR TABLE (इङ्लिश क्यालेन्डरभन्दा माथि) -->
+            <div class="bg-white dark:bg-slate-900 border border-slate-200 dark:border-slate-800 rounded-2xl shadow-sm p-3.5 space-y-2">
+                <div class="flex items-center space-x-2 pb-2 border-b border-slate-100 dark:border-slate-800">
+                    <div class="w-7 h-7 rounded-lg bg-emerald-600/20 text-emerald-500 flex items-center justify-center">
+                        <i class="fa-solid fa-calendar-alt text-xs"></i>
+                    </div>
+                    <h3 id="np-table-title" class="font-bold text-slate-900 dark:text-white text-xs">नेपाली पात्रो</h3>
+                </div>
+                <div class="overflow-x-auto">
+                    <table class="w-full border-collapse text-left">
+                        <thead>
+                            <tr class="bg-slate-100 dark:bg-slate-800 text-slate-700 dark:text-slate-300">
+                                <th class="p-2 border border-slate-200 dark:border-slate-700 text-center text-[11px]" id="th-day">बार</th>
+                                <th class="p-2 border border-slate-200 dark:border-slate-700 text-center text-[11px]" id="th-year">साल</th>
+                                <th class="p-2 border border-slate-200 dark:border-slate-700 text-center text-[11px]" id="th-month">महिना</th>
+                                <th class="p-2 border border-slate-200 dark:border-slate-700 text-center text-[11px]" id="th-date">गते</th>
+                            </tr>
+                        </thead>
+                        <tbody>
+                            <tr>
+                                <td id="nepali-day" class="p-2 border border-slate-200 dark:border-slate-700 text-center font-bold text-emerald-600 dark:text-emerald-400">-</td>
+                                <td id="nepali-year" class="p-2 border border-slate-200 dark:border-slate-700 text-center font-bold">-</td>
+                                <td id="nepali-month" class="p-2 border border-slate-200 dark:border-slate-700 text-center font-bold">-</td>
+                                <td id="nepali-date" class="p-2 border border-slate-200 dark:border-slate-700 text-center font-bold">-</td>
+                            </tr>
+                        </tbody>
+                    </table>
+                </div>
+            </div>
+
+            <!-- 2. LIVE CALENDAR & TIME (ENGLISH) -->
             <div class="flex justify-between items-center px-4 py-3 bg-white dark:bg-slate-900 border border-slate-200 dark:border-slate-800 rounded-2xl shadow-sm text-slate-800 dark:text-white">
                 <div class="flex items-center space-x-3 w-full">
                     <div class="w-9 h-9 rounded-xl bg-emerald-600/20 border border-emerald-500/30 flex items-center justify-center text-emerald-500">
                         <i class="fa-solid fa-calendar-days text-base"></i>
                     </div>
                     <div>
-                        <p class="text-[10px] text-slate-400 font-semibold uppercase tracking-wider"><span>Current Date & Time</span></p>
+                        <p class="text-[10px] text-slate-400 font-semibold uppercase tracking-wider"><span id="lbl-curr-time">Current Date & Time</span></p>
                         <p id="dynamic-date" class="text-xs md:text-sm font-bold tracking-wide">Loading...</p>
                     </div>
                 </div>
             </div>
 
-            <!-- 2. BMI CALCULATOR -->
+            <!-- 3. BMI CALCULATOR -->
             <div class="bg-white dark:bg-slate-900 p-4 md:p-5 rounded-2xl border border-slate-200 dark:border-slate-800 shadow-sm space-y-3">
                 <div class="flex items-center space-x-2.5 pb-2 border-b border-slate-100 dark:border-slate-800">
                     <div class="w-7 h-7 rounded-lg bg-emerald-600/20 text-emerald-500 flex items-center justify-center">
                         <i class="fa-solid fa-weight-scale text-xs"></i>
                     </div>
-                    <h3 class="font-bold text-slate-900 dark:text-white text-xs md:text-sm"><span>BMI Calculator (Health Check)</span></h3>
+                    <h3 class="font-bold text-slate-900 dark:text-white text-xs md:text-sm"><span id="bmi-title">BMI Calculator (Health Check)</span></h3>
                 </div>
 
                 <div class="grid grid-cols-1 sm:grid-cols-3 gap-3">
                     <div>
-                        <label class="block text-[10px] font-semibold text-slate-500 dark:text-slate-400 mb-1"><span>Height (Feet)</span></label>
+                        <label class="block text-[10px] font-semibold text-slate-500 dark:text-slate-400 mb-1"><span id="lbl-height-ft">Height (Feet)</span></label>
                         <input type="number" id="bmi-feet" placeholder="e.g., 5" class="w-full bg-slate-50 dark:bg-slate-800 border border-slate-200 dark:border-slate-700 rounded-xl p-2.5 text-slate-900 dark:text-white text-xs outline-none focus:border-emerald-500">
                     </div>
                     <div>
-                        <label class="block text-[10px] font-semibold text-slate-500 dark:text-slate-400 mb-1"><span>Height (Inches)</span></label>
+                        <label class="block text-[10px] font-semibold text-slate-500 dark:text-slate-400 mb-1"><span id="lbl-height-in">Height (Inches)</span></label>
                         <input type="number" id="bmi-inch" placeholder="e.g., 10" class="w-full bg-slate-50 dark:bg-slate-800 border border-slate-200 dark:border-slate-700 rounded-xl p-2.5 text-slate-900 dark:text-white text-xs outline-none focus:border-emerald-500">
                     </div>
                     <div>
-                        <label class="block text-[10px] font-semibold text-slate-500 dark:text-slate-400 mb-1"><span>Weight (kg)</span></label>
+                        <label class="block text-[10px] font-semibold text-slate-500 dark:text-slate-400 mb-1"><span id="lbl-weight">Weight (kg)</span></label>
                         <input type="number" id="bmi-weight" placeholder="e.g., 53" class="w-full bg-slate-50 dark:bg-slate-800 border border-slate-200 dark:border-slate-700 rounded-xl p-2.5 text-slate-900 dark:text-white text-xs outline-none focus:border-emerald-500">
                     </div>
                 </div>
 
                 <button onclick="calculateBMI()" class="w-full py-2.5 bg-emerald-600 hover:bg-emerald-700 text-white font-bold rounded-xl transition shadow-md text-xs">
-                    <span>Calculate BMI</span>
+                    <span id="btn-calc-bmi">Calculate BMI</span>
                 </button>
 
                 <div id="bmi-result" class="hidden p-3 bg-slate-50 dark:bg-slate-800/60 rounded-xl border border-slate-200 dark:border-slate-700 text-center space-y-1">
@@ -169,28 +201,28 @@ tailwind.config = {
                 </div>
             </div>
 
-            <!-- 3. DATE & AGE CALCULATOR -->
+            <!-- 4. DATE & AGE CALCULATOR -->
             <div class="bg-white dark:bg-slate-900 p-4 md:p-5 rounded-2xl border border-slate-200 dark:border-slate-800 shadow-sm space-y-3">
                 <div class="flex items-center space-x-2.5 pb-2 border-b border-slate-100 dark:border-slate-800">
                     <div class="w-7 h-7 rounded-lg bg-emerald-600/20 text-emerald-500 flex items-center justify-center">
                         <i class="fa-solid fa-cake-candles text-xs"></i>
                     </div>
-                    <h3 class="font-bold text-slate-900 dark:text-white text-xs md:text-sm"><span>Date & Age Calculator</span></h3>
+                    <h3 class="font-bold text-slate-900 dark:text-white text-xs md:text-sm"><span id="age-title">Date & Age Calculator</span></h3>
                 </div>
 
                 <div class="grid grid-cols-1 sm:grid-cols-2 gap-3">
                     <div>
-                        <label class="block text-[10px] font-semibold text-slate-500 dark:text-slate-400 mb-1"><span>Date of Birth</span></label>
+                        <label class="block text-[10px] font-semibold text-slate-500 dark:text-slate-400 mb-1"><span id="lbl-dob">Date of Birth</span></label>
                         <input type="date" id="birth-date" class="w-full bg-slate-50 dark:bg-slate-800 border border-slate-200 dark:border-slate-700 rounded-xl p-2.5 text-slate-900 dark:text-white text-xs outline-none focus:border-emerald-500">
                     </div>
                     <div>
-                        <label class="block text-[10px] font-semibold text-slate-500 dark:text-slate-400 mb-1"><span>Target / Current Date</span></label>
+                        <label class="block text-[10px] font-semibold text-slate-500 dark:text-slate-400 mb-1"><span id="lbl-target-date">Target / Current Date</span></label>
                         <input type="date" id="target-date" class="w-full bg-slate-50 dark:bg-slate-800 border border-slate-200 dark:border-slate-700 rounded-xl p-2.5 text-slate-900 dark:text-white text-xs outline-none focus:border-emerald-500">
                     </div>
                 </div>
 
                 <button onclick="calculateAge()" class="w-full py-2.5 bg-emerald-600 hover:bg-emerald-700 text-white font-bold rounded-xl transition shadow-md text-xs">
-                    <span>Calculate Age</span>
+                    <span id="btn-calc-age">Calculate Age</span>
                 </button>
 
                 <div id="age-result" class="hidden p-3 bg-slate-50 dark:bg-slate-800/60 rounded-xl border border-slate-200 dark:border-slate-700 text-center">
@@ -213,6 +245,41 @@ tailwind.config = {
     function updateLanguageUI() {
         const btn = document.getElementById('lang-toggle-btn');
         if(btn) btn.innerText = currentLang;
+
+        // भाषा अनुसार UI टेक्स्टहरू फेर्ने
+        if (currentLang === 'NEP') {
+            document.getElementById('np-table-title').innerText = "नेपाली पात्रो";
+            document.getElementById('th-day').innerText = "बार";
+            document.getElementById('th-year').innerText = "साल";
+            document.getElementById('th-month').innerText = "महिना";
+            document.getElementById('th-date').innerText = "गते";
+            document.getElementById('lbl-curr-time').innerText = "वर्तमान मिति र समय";
+            document.getElementById('bmi-title').innerText = "बिएमआई क्याल्कुलेटर (स्वास्थ्य जाँच)";
+            document.getElementById('lbl-height-ft').innerText = "उचाइ (फिट)";
+            document.getElementById('lbl-height-in').innerText = "उचाइ (इन्च)";
+            document.getElementById('lbl-weight').innerText = "तौल (केजी)";
+            document.getElementById('btn-calc-bmi').innerText = "बिएमआई गणना गर्नुहोस्";
+            document.getElementById('age-title').innerText = "उमेर क्याल्कुलेटर";
+            document.getElementById('lbl-dob').innerText = "जन्म मिति";
+            document.getElementById('lbl-target-date').innerText = "लक्ष्य / हालको मिति";
+            document.getElementById('btn-calc-age').innerText = "उमेर गणना गर्नुहोस्";
+        } else {
+            document.getElementById('np-table-title').innerText = "Nepali Calendar";
+            document.getElementById('th-day').innerText = "Day";
+            document.getElementById('th-year').innerText = "Year";
+            document.getElementById('th-month').innerText = "Month";
+            document.getElementById('th-date').innerText = "Date";
+            document.getElementById('lbl-curr-time').innerText = "Current Date & Time";
+            document.getElementById('bmi-title').innerText = "BMI Calculator (Health Check)";
+            document.getElementById('lbl-height-ft').innerText = "Height (Feet)";
+            document.getElementById('lbl-height-in').innerText = "Height (Inches)";
+            document.getElementById('lbl-weight').innerText = "Weight (kg)";
+            document.getElementById('btn-calc-bmi').innerText = "Calculate BMI";
+            document.getElementById('age-title').innerText = "Date & Age Calculator";
+            document.getElementById('lbl-dob').innerText = "Date of Birth";
+            document.getElementById('lbl-target-date').innerText = "Target / Current Date";
+            document.getElementById('btn-calc-age').innerText = "Calculate Age";
+        }
     }
 
     function toggleLanguage() {
@@ -220,6 +287,7 @@ tailwind.config = {
         localStorage.setItem('lang', currentLang);
         updateLanguageUI();
         updateDynamicHeader();
+        loadNepaliCalendar();
     }
 
     function updateThemeUI() {
@@ -238,6 +306,27 @@ tailwind.config = {
             localStorage.setItem('theme', 'dark');
         }
         updateThemeUI();
+    }
+
+    function loadNepaliCalendar() {
+        try {
+            let currentDate = new NepaliDate();
+            
+            // भाषा अनुसार बार र महिना सेट गर्ने
+            let dayName = currentDate.format('dddd');
+            let monthName = currentDate.format('MMMM');
+
+            if (currentLang === 'EN') {
+                // यदि अंग्रेजी छ भने नेपाली शब्दलाई अंग्रेजीमा वा युनिकोटमै देखाउन मिल्छ, यहाँ युनिकोट राखिएको छ
+            }
+
+            document.getElementById('nepali-day').innerText = dayName;
+            document.getElementById('nepali-year').innerText = currentDate.format('YYYY');
+            document.getElementById('nepali-month').innerText = monthName;
+            document.getElementById('nepali-date').innerText = currentDate.format('DD');
+        } catch (error) {
+            console.error("Nepali date load error", error);
+        }
     }
 
     function updateDynamicHeader() {
@@ -274,17 +363,14 @@ tailwind.config = {
         const inches = parseFloat(document.getElementById('bmi-inch').value) || 0;
         const weight = parseFloat(document.getElementById('bmi-weight').value) || 0;
 
-        if (feet === 0 && inches === 0) {
-            return;
-        }
-        if (weight <= 0) {
+        if (feet === 0 && inches === 0 || weight <= 0) {
             return;
         }
 
         const totalInches = (feet * 12) + inches;
         const heightInMeters = totalInches * 0.0254;
-
         const bmi = weight / (heightInMeters * heightInMeters);
+        
         const resultBox = document.getElementById('bmi-result');
         const scoreText = document.getElementById('bmi-score-text');
         const statusText = document.getElementById('bmi-status-text');
@@ -301,42 +387,37 @@ tailwind.config = {
 
         if (bmi < 18.5) {
             let diff = (minHealthyWeight - weight).toFixed(1);
-            status = 'Underweight';
+            status = currentLang === 'NEP' ? 'तौल कम (Underweight)' : 'Underweight';
             colorClass = 'text-amber-500';
-            diffText = `💡 Need to gain at least **+${diff} kg** to reach a healthy weight.`;
+            diffText = currentLang === 'NEP' ? `💡 स्वस्थ तौल पाउन कम्तिमा **+${diff} kg** बढाउनु पर्छ।` : `💡 Need to gain at least **+${diff} kg** to reach a healthy weight.`;
         } else if (bmi >= 18.5 && bmi < 24.9) {
-            status = 'Normal / Healthy Weight';
+            status = currentLang === 'NEP' ? 'सामान्य / स्वस्थ तौल (Normal)' : 'Normal / Healthy Weight';
             colorClass = 'text-emerald-500';
-            diffText = `🎉 Great! Your weight is in the healthy range.`;
+            diffText = currentLang === 'NEP' ? `🎉 बधाई छ! तपाईंको तौल स्वस्थ दायरामा छ।` : `🎉 Great! Your weight is in the healthy range.`;
         } else if (bmi >= 25 && bmi < 29.9) {
-            let diff = (weight - maxHealthyWeight).toFixed(1);
-            status = 'Overweight';
+            status = currentLang === 'NEP' ? 'तौल बढी (Overweight)' : 'Overweight';
             colorClass = 'text-orange-500';
-            diffText = `💡 Need to lose at least **-${diff} kg** to reach a healthy weight.`;
+            diffText = currentLang === 'NEP' ? `💡 स्वस्थ तौल पाउन कम्तिमा **-${diff} kg** घटाउनु पर्छ।` : `💡 Need to lose at least **-${diff} kg** to reach a healthy weight.`;
         } else {
             let diff = (weight - maxHealthyWeight).toFixed(1);
-            status = 'Obese';
+            status = currentLang === 'NEP' ? 'ोटोपना (Obese)' : 'Obese';
             colorClass = 'text-rose-500';
-            diffText = `⚠️ Need to reduce at least **-${diff} kg** for better health.`;
+            diffText = currentLang === 'NEP' ? `⚠️ राम्रो स्वास्थ्यको लागि कम्तिमा **-${diff} kg** घटाउनुहोस्।` : `⚠️ Need to reduce at least **-${diff} kg** for better health.`;
         }
 
-        statusText.innerHTML = `<span class="${colorClass} font-bold">Status: ${status}</span><br><span class="text-[10px] text-slate-400 mt-1 block">${diffText}</span>`;
+        statusText.innerHTML = `<span class="${colorClass} font-bold">${status}</span><br><span class="text-[10px] text-slate-400 mt-1 block">${diffText}</span>`;
     }
 
     function calculateAge() {
         const birthInput = document.getElementById('birth-date').value;
         const targetInput = document.getElementById('target-date').value;
 
-        if (!birthInput) {
-            return;
-        }
+        if (!birthInput) return;
 
         const birthDate = new Date(birthInput);
         const targetDate = targetInput ? new Date(targetInput) : new Date();
 
-        if (birthDate > targetDate) {
-            return;
-        }
+        if (birthDate > targetDate) return;
 
         let years = targetDate.getFullYear() - birthDate.getFullYear();
         let months = targetDate.getMonth() - birthDate.getMonth();
@@ -356,7 +437,11 @@ tailwind.config = {
         const scoreText = document.getElementById('age-score-text');
 
         ageBox.classList.remove('hidden');
-        scoreText.innerText = `Age: ${years} Years, ${months} Months, and ${days} Days`;
+        if (currentLang === 'NEP') {
+            scoreText.innerText = `उमेर: ${years} वर्ष, ${months} महिना, र ${days} दिन`;
+        } else {
+            scoreText.innerText = `Age: ${years} Years, ${months} Months, and ${days} Days`;
+        }
     }
 
     function saveProfileDetails() {
@@ -409,6 +494,7 @@ tailwind.config = {
         updateLanguageUI();
         updateThemeUI();
         updateDynamicHeader();
+        loadNepaliCalendar();
         loadUserData();
         loadAvatar();
 
