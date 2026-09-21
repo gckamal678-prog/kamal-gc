@@ -144,10 +144,10 @@ tailwind.config = {
                         </thead>
                         <tbody>
                             <tr>
-                                <td id="nepali-day" class="p-2 border border-slate-200 dark:border-slate-700 text-center font-bold text-emerald-600 dark:text-emerald-400">-</td>
-                                <td id="nepali-year" class="p-2 border border-slate-200 dark:border-slate-700 text-center font-bold">-</td>
-                                <td id="nepali-month" class="p-2 border border-slate-200 dark:border-slate-700 text-center font-bold">-</td>
-                                <td id="nepali-date" class="p-2 border border-slate-200 dark:border-slate-700 text-center font-bold">-</td>
+                                <td id="nepali-day" class="p-2 border border-slate-200 dark:border-slate-700 text-center font-bold text-emerald-600 dark:text-emerald-400">लोड हुँदै...</td>
+                                <td id="nepali-year" class="p-2 border border-slate-200 dark:border-slate-700 text-center font-bold">लोड हुँदै...</td>
+                                <td id="nepali-month" class="p-2 border border-slate-200 dark:border-slate-700 text-center font-bold">लोड हुँदै...</td>
+                                <td id="nepali-date" class="p-2 border border-slate-200 dark:border-slate-700 text-center font-bold">लोड हुँदै...</td>
                             </tr>
                         </tbody>
                     </table>
@@ -246,7 +246,6 @@ tailwind.config = {
         const btn = document.getElementById('lang-toggle-btn');
         if(btn) btn.innerText = currentLang;
 
-        // भाषा अनुसार UI टेक्स्टहरू फेर्ने
         if (currentLang === 'NEP') {
             document.getElementById('np-table-title').innerText = "नेपाली पात्रो";
             document.getElementById('th-day').innerText = "बार";
@@ -310,20 +309,17 @@ tailwind.config = {
 
     function loadNepaliCalendar() {
         try {
-            let currentDate = new NepaliDate();
-            
-            // भाषा अनुसार बार र महिना सेट गर्ने
-            let dayName = currentDate.format('dddd');
-            let monthName = currentDate.format('MMMM');
-
-            if (currentLang === 'EN') {
-                // यदि अंग्रेजी छ भने नेपाली शब्दलाई अंग्रेजीमा वा युनिकोटमै देखाउन मिल्छ, यहाँ युनिकोट राखिएको छ
+            // Check if NepaliDate library is successfully loaded
+            if (typeof NepaliDate !== 'undefined') {
+                let currentDate = new NepaliDate();
+                document.getElementById('nepali-day').innerText = currentDate.format('dddd');
+                document.getElementById('nepali-year').innerText = currentDate.format('YYYY');
+                document.getElementById('nepali-month').innerText = currentDate.format('MMMM');
+                document.getElementById('nepali-date').innerText = currentDate.format('DD');
+            } else {
+                // Fallback if CDN is slow
+                setTimeout(loadNepaliCalendar, 500);
             }
-
-            document.getElementById('nepali-day').innerText = dayName;
-            document.getElementById('nepali-year').innerText = currentDate.format('YYYY');
-            document.getElementById('nepali-month').innerText = monthName;
-            document.getElementById('nepali-date').innerText = currentDate.format('DD');
         } catch (error) {
             console.error("Nepali date load error", error);
         }
@@ -363,9 +359,7 @@ tailwind.config = {
         const inches = parseFloat(document.getElementById('bmi-inch').value) || 0;
         const weight = parseFloat(document.getElementById('bmi-weight').value) || 0;
 
-        if (feet === 0 && inches === 0 || weight <= 0) {
-            return;
-        }
+        if ((feet === 0 && inches === 0) || weight <= 0) return;
 
         const totalInches = (feet * 12) + inches;
         const heightInMeters = totalInches * 0.0254;
@@ -395,12 +389,13 @@ tailwind.config = {
             colorClass = 'text-emerald-500';
             diffText = currentLang === 'NEP' ? `🎉 बधाई छ! तपाईंको तौल स्वस्थ दायरामा छ।` : `🎉 Great! Your weight is in the healthy range.`;
         } else if (bmi >= 25 && bmi < 29.9) {
+            let diff = (weight - maxHealthyWeight).toFixed(1);
             status = currentLang === 'NEP' ? 'तौल बढी (Overweight)' : 'Overweight';
             colorClass = 'text-orange-500';
             diffText = currentLang === 'NEP' ? `💡 स्वस्थ तौल पाउन कम्तिमा **-${diff} kg** घटाउनु पर्छ।` : `💡 Need to lose at least **-${diff} kg** to reach a healthy weight.`;
         } else {
             let diff = (weight - maxHealthyWeight).toFixed(1);
-            status = currentLang === 'NEP' ? 'ोटोपना (Obese)' : 'Obese';
+            status = currentLang === 'NEP' ? 'मोटोपना (Obese)' : 'Obese';
             colorClass = 'text-rose-500';
             diffText = currentLang === 'NEP' ? `⚠️ राम्रो स्वास्थ्यको लागि कम्तिमा **-${diff} kg** घटाउनुहोस्।` : `⚠️ Need to reduce at least **-${diff} kg** for better health.`;
         }
