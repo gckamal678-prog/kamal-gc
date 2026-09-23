@@ -117,10 +117,40 @@ tailwind.config = {
             </div>
         </header>
 
-        <!-- MAIN CONTENT AREA (SINGLE LINE FULL WIDTH) -->
+        <!-- MAIN CONTENT AREA -->
         <main class="p-3 md:p-4 space-y-3 flex-1 w-full overflow-y-auto">
             
-            <!-- 1. NEPALI CALENDAR (FULL WIDTH) -->
+            <!-- 1. LIVE SPEEDOMETER (NEW ADDITION) -->
+            <div class="bg-white dark:bg-slate-900 p-3 rounded-xl border border-slate-200 dark:border-slate-800 shadow-sm space-y-2">
+                <div onclick="toggleSpeedContent()" class="flex items-center justify-between pb-1.5 border-b border-slate-100 dark:border-slate-800 cursor-pointer select-none">
+                    <div class="flex items-center space-x-1.5">
+                        <div class="w-6 h-6 rounded-md bg-emerald-600/20 text-emerald-500 flex items-center justify-center">
+                            <i class="fa-solid fa-gauge-high text-[10px]"></i>
+                        </div>
+                        <h3 class="font-bold text-slate-900 dark:text-white text-[11px]"><span id="speed-title">Live Speedometer</span></h3>
+                    </div>
+                    <i id="speed-arrow" class="fa-solid fa-chevron-down text-slate-400 text-xs transition-transform duration-300"></i>
+                </div>
+
+                <div id="speed-content" class="hidden space-y-2 pt-1 text-center">
+                    <div class="p-3 bg-slate-50 dark:bg-slate-800/60 rounded-lg border border-slate-200 dark:border-slate-700">
+                        <p class="text-[9px] text-slate-400 font-semibold uppercase tracking-wider" id="lbl-current-speed">Current Speed</p>
+                        <p id="live-speed-value" class="text-2xl font-extrabold text-emerald-600 dark:text-emerald-400 my-1">0.0 <span class="text-xs font-normal">km/h</span></p>
+                        <p id="speed-status-text" class="text-[10px] text-slate-500 dark:text-slate-400">GPS searching...</p>
+                    </div>
+
+                    <div class="grid grid-cols-2 gap-2">
+                        <button onclick="startSpeedTracking()" id="btn-start-speed" class="py-1.5 bg-emerald-600 hover:bg-emerald-700 text-white font-bold rounded-lg transition shadow-sm text-[11px]">
+                            <span id="txt-start">Start Tracking</span>
+                        </button>
+                        <button onclick="stopSpeedTracking()" id="btn-stop-speed" class="py-1.5 bg-rose-600 hover:bg-rose-700 text-white font-bold rounded-lg transition shadow-sm text-[11px]">
+                            <span id="txt-stop">Stop</span>
+                        </button>
+                    </div>
+                </div>
+            </div>
+
+            <!-- 2. NEPALI CALENDAR (FULL WIDTH) -->
             <div class="bg-white dark:bg-slate-900 border border-slate-200 dark:border-slate-800 rounded-xl shadow-sm p-3 space-y-2">
                 <div class="flex items-center justify-between pb-1.5 border-b border-slate-100 dark:border-slate-800">
                     <div class="flex items-center space-x-1.5">
@@ -150,7 +180,7 @@ tailwind.config = {
                 </div>
             </div>
 
-            <!-- 2. LIVE ENGLISH CALENDAR & TIME (FULL WIDTH) -->
+            <!-- 3. LIVE ENGLISH CALENDAR & TIME -->
             <div class="bg-white dark:bg-slate-900 border border-slate-200 dark:border-slate-800 rounded-xl shadow-sm p-3 flex items-center space-x-3">
                 <div class="w-8 h-8 rounded-lg bg-emerald-600/20 border border-emerald-500/30 flex items-center justify-center text-emerald-500 shrink-0">
                     <i class="fa-solid fa-calendar-days text-xs"></i>
@@ -161,7 +191,7 @@ tailwind.config = {
                 </div>
             </div>
 
-            <!-- 3. BMI CALCULATOR (COLLAPSIBLE) -->
+            <!-- 4. BMI CALCULATOR (COLLAPSIBLE) -->
             <div class="bg-white dark:bg-slate-900 p-3 rounded-xl border border-slate-200 dark:border-slate-800 shadow-sm space-y-2">
                 <div onclick="toggleBmiContent()" class="flex items-center justify-between pb-1.5 border-b border-slate-100 dark:border-slate-800 cursor-pointer select-none">
                     <div class="flex items-center space-x-1.5">
@@ -173,7 +203,6 @@ tailwind.config = {
                     <i id="bmi-arrow" class="fa-solid fa-chevron-down text-slate-400 text-xs transition-transform duration-300"></i>
                 </div>
 
-                <!-- Hidden Content Inside -->
                 <div id="bmi-content" class="hidden space-y-2 pt-1">
                     <div class="grid grid-cols-3 gap-2">
                         <div>
@@ -201,7 +230,7 @@ tailwind.config = {
                 </div>
             </div>
 
-            <!-- 4. DATE & AGE CALCULATOR (COLLAPSIBLE) -->
+            <!-- 5. DATE & AGE CALCULATOR (COLLAPSIBLE) -->
             <div class="bg-white dark:bg-slate-900 p-3 rounded-xl border border-slate-200 dark:border-slate-800 shadow-sm space-y-2">
                 <div onclick="toggleAgeContent()" class="flex items-center justify-between pb-1.5 border-b border-slate-100 dark:border-slate-800 cursor-pointer select-none">
                     <div class="flex items-center space-x-1.5">
@@ -213,7 +242,6 @@ tailwind.config = {
                     <i id="age-arrow" class="fa-solid fa-chevron-down text-slate-400 text-xs transition-transform duration-300"></i>
                 </div>
 
-                <!-- Hidden Content Inside -->
                 <div id="age-content" class="hidden space-y-2 pt-1">
                     <div class="grid grid-cols-2 gap-2">
                         <div>
@@ -246,7 +274,14 @@ tailwind.config = {
         if (sidebar) sidebar.classList.toggle('-translate-x-full');
     }
 
-    // Toggle BMI Content
+    // Toggle Sections
+    function toggleSpeedContent() {
+        const content = document.getElementById('speed-content');
+        const arrow = document.getElementById('speed-arrow');
+        if(content) content.classList.toggle('hidden');
+        if(arrow) arrow.classList.toggle('rotate-180');
+    }
+
     function toggleBmiContent() {
         const content = document.getElementById('bmi-content');
         const arrow = document.getElementById('bmi-arrow');
@@ -254,7 +289,6 @@ tailwind.config = {
         if(arrow) arrow.classList.toggle('rotate-180');
     }
 
-    // Toggle Age Content
     function toggleAgeContent() {
         const content = document.getElementById('age-content');
         const arrow = document.getElementById('age-arrow');
@@ -269,6 +303,10 @@ tailwind.config = {
         if(btn) btn.innerText = currentLang;
 
         if (currentLang === 'NEP') {
+            document.getElementById('speed-title').innerText = "लाइभ गति (Live Speedometer)";
+            document.getElementById('lbl-current-speed').innerText = "हालको गति";
+            document.getElementById('txt-start').innerText = "सुरु गर्नुहोस्";
+            document.getElementById('txt-stop').innerText = "बन्द गर्नुहोस्";
             document.getElementById('np-table-title').innerText = "नेपाली पात्रो";
             document.getElementById('th-day').innerText = "बार";
             document.getElementById('th-year').innerText = "साल";
@@ -285,6 +323,10 @@ tailwind.config = {
             document.getElementById('lbl-target-date').innerText = "लक्ष्य मिति";
             document.getElementById('btn-calc-age').innerText = "उमेर गणना";
         } else {
+            document.getElementById('speed-title').innerText = "Live Speedometer";
+            document.getElementById('lbl-current-speed').innerText = "Current Speed";
+            document.getElementById('txt-start').innerText = "Start Tracking";
+            document.getElementById('txt-stop').innerText = "Stop";
             document.getElementById('np-table-title').innerText = "Nepali Calendar";
             document.getElementById('th-day').innerText = "Day";
             document.getElementById('th-year').innerText = "Year";
@@ -329,6 +371,53 @@ tailwind.config = {
         updateThemeUI();
     }
 
+    // LIVE GPS SPEEDOMETER LOGIC
+    let watchId = null;
+
+    function startSpeedTracking() {
+        const speedValEl = document.getElementById('live-speed-value');
+        const statusTextEl = document.getElementById('speed-status-text');
+
+        if ("geolocation" in navigator) {
+            statusTextEl.innerText = currentLang === 'NEP' ? 'GPS सिग्เนल खोज्दैछ...' : 'Acquiring GPS signal...';
+            
+            watchId = navigator.geolocation.watchPosition(
+                (position) => {
+                    // position.coords.speed gives speed in meters per second (m/s). Convert to km/h by multiplying by 3.6
+                    let speedMps = position.coords.speed;
+                    let speedKmh = 0;
+                    
+                    if (speedMps !== null && !isNaN(speedMps) && speedMps >= 0) {
+                        speedKmh = speedMps * 3.6;
+                    }
+
+                    speedValEl.innerHTML = `${speedKmh.toFixed(1)} <span class="text-xs font-normal">km/h</span>`;
+                    statusTextEl.innerText = currentLang === 'NEP' ? 'ट्र्याकिङ चालु छ (Tracking Active)' : 'Tracking Active';
+                },
+                (error) => {
+                    console.error(error);
+                    statusTextEl.innerText = currentLang === 'NEP' ? 'GPS त्रुटि: अनुमति दिनुहोस्' : 'GPS Error: Please enable location';
+                },
+                {
+                    enableHighAccuracy: true,
+                    maximumAge: 0,
+                    timeout: 10000
+                }
+            );
+        } else {
+            statusTextEl.innerText = currentLang === 'NEP' ? 'यो ब्राउजरमा GPS सपोर्ट छैन' : 'Geolocation is not supported by this browser';
+        }
+    }
+
+    function stopSpeedTracking() {
+        if (watchId !== null) {
+            navigator.geolocation.clearWatch(watchId);
+            watchId = null;
+        }
+        document.getElementById('live-speed-value').innerHTML = `0.0 <span class="text-xs font-normal">km/h</span>`;
+        document.getElementById('speed-status-text').innerText = currentLang === 'NEP' ? 'ट्र्याकिङ रोकियो' : 'Tracking Stopped';
+    }
+
     function loadNepaliCalendar() {
         const daysNp = ["आइतबार", "सोमबार", "मंगलबार", "बुधबार", "बिहीबार", "शुक्रबार", "शनिबार"];
         const daysEn = ["Sunday", "Monday", "Tuesday", "Wednesday", "Thursday", "Friday", "Saturday"];
@@ -336,10 +425,9 @@ tailwind.config = {
         const now = new Date();
         let day = now.getDay();
         
-        // यहाँ हालको सिस्टमको वास्तविक मिति र बार अनुसार चल्ने बनाइएको छ
         let npYear = "२०८३";
         let npMonth = "आश्विन";
-        let npDate = now.getDate(); // रियल टाइम अनुसार सर्नेछ
+        let npDate = now.getDate();
         
         let dayTextNp = daysNp[day];
         let dayTextEn = daysEn[day];
@@ -352,7 +440,7 @@ tailwind.config = {
         } else {
             document.getElementById('nepali-day').innerText = dayTextEn;
             document.getElementById('nepali-year').innerText = "2083";
-            document.getElementById('nepali-month').innerText = "September";
+            document.getElementById('nepali-month').innerText, document.getElementById('nepali-month').innerText = "September";
             document.getElementById('nepali-date').innerText = npDate;
         }
     }
@@ -403,7 +491,7 @@ tailwind.config = {
             status = currentLang === 'NEP' ? 'सामान्य (Normal)' : 'Healthy';
             colorClass = 'text-emerald-500';
         } else if (bmi >= 25 && bmi < 29.9) {
-            status = currentLang === 'NEP' ? 'तौल बढी (Overweight)' : 'Overweight';
+            status = currentCardStatus = currentLang === 'NEP' ? 'तौल बढी (Overweight)' : 'Overweight';
             colorClass = 'text-orange-500';
         } else {
             status = currentLang === 'NEP' ? 'मोटोपना (Obese)' : 'Obese';
@@ -430,7 +518,7 @@ tailwind.config = {
 
         if (days < 0) {
             months--;
-            const prevMonth = new Date(targetDate.getFullYear(), targetDate.getMonth(), 0);
+            const prevMonth = new Date(targetDate.getFullYear(), target, 0);
             days += prevMonth.getDate();
         }
         if (months < 0) {
