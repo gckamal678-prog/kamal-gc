@@ -117,7 +117,7 @@ tailwind.config = {
             </div>
         </header>
 
-        <!-- MAIN CONTENT AREA (SINGLE LINE STACKED LAYOUT) -->
+        <!-- MAIN CONTENT AREA (SINGLE LINE FULL WIDTH) -->
         <main class="p-3 md:p-4 space-y-3 flex-1 w-full overflow-y-auto">
             
             <!-- 1. NEPALI CALENDAR (FULL WIDTH) -->
@@ -133,19 +133,19 @@ tailwind.config = {
                 <div class="grid grid-cols-4 gap-1.5 text-center pt-1">
                     <div class="bg-slate-50 dark:bg-slate-800/60 p-2 rounded-lg border border-slate-100 dark:border-slate-800">
                         <p class="text-[9px] text-slate-400" id="th-day">बार</p>
-                        <p id="nepali-day" class="font-bold text-emerald-600 dark:text-emerald-400 text-[11px]">बुधबार</p>
+                        <p id="nepali-day" class="font-bold text-emerald-600 dark:text-emerald-400 text-[11px]">-</p>
                     </div>
                     <div class="bg-slate-50 dark:bg-slate-800/60 p-2 rounded-lg border border-slate-100 dark:border-slate-800">
                         <p class="text-[9px] text-slate-400" id="th-year">साल</p>
-                        <p id="nepali-year" class="font-bold text-[11px]">२०८३</p>
+                        <p id="nepali-year" class="font-bold text-[11px]">-</p>
                     </div>
                     <div class="bg-slate-50 dark:bg-slate-800/60 p-2 rounded-lg border border-slate-100 dark:border-slate-800">
                         <p class="text-[9px] text-slate-400" id="th-month">महिना</p>
-                        <p id="nepali-month" class="font-bold text-[11px]">आश्विन</p>
+                        <p id="nepali-month" class="font-bold text-[11px]">-</p>
                     </div>
                     <div class="bg-slate-50 dark:bg-slate-800/60 p-2 rounded-lg border border-slate-100 dark:border-slate-800">
                         <p class="text-[9px] text-slate-400" id="th-date">गते</p>
-                        <p id="nepali-date" class="font-bold text-[11px]">७</p>
+                        <p id="nepali-date" class="font-bold text-[11px]">-</p>
                     </div>
                 </div>
             </div>
@@ -161,7 +161,7 @@ tailwind.config = {
                 </div>
             </div>
 
-            <!-- 3. BMI CALCULATOR (COLLAPSIBLE / HIDDEN BY DEFAULT) -->
+            <!-- 3. BMI CALCULATOR (COLLAPSIBLE) -->
             <div class="bg-white dark:bg-slate-900 p-3 rounded-xl border border-slate-200 dark:border-slate-800 shadow-sm space-y-2">
                 <div onclick="toggleBmiContent()" class="flex items-center justify-between pb-1.5 border-b border-slate-100 dark:border-slate-800 cursor-pointer select-none">
                     <div class="flex items-center space-x-1.5">
@@ -201,7 +201,7 @@ tailwind.config = {
                 </div>
             </div>
 
-            <!-- 4. DATE & AGE CALCULATOR (COLLAPSIBLE / HIDDEN BY DEFAULT) -->
+            <!-- 4. DATE & AGE CALCULATOR (COLLAPSIBLE) -->
             <div class="bg-white dark:bg-slate-900 p-3 rounded-xl border border-slate-200 dark:border-slate-800 shadow-sm space-y-2">
                 <div onclick="toggleAgeContent()" class="flex items-center justify-between pb-1.5 border-b border-slate-100 dark:border-slate-800 cursor-pointer select-none">
                     <div class="flex items-center space-x-1.5">
@@ -250,16 +250,16 @@ tailwind.config = {
     function toggleBmiContent() {
         const content = document.getElementById('bmi-content');
         const arrow = document.getElementById('bmi-arrow');
-        content.classList.toggle('hidden');
-        arrow.classList.toggle('rotate-180');
+        if(content) content.classList.toggle('hidden');
+        if(arrow) arrow.classList.toggle('rotate-180');
     }
 
     // Toggle Age Content
     function toggleAgeContent() {
         const content = document.getElementById('age-content');
         const arrow = document.getElementById('age-arrow');
-        content.classList.toggle('hidden');
-        arrow.classList.toggle('rotate-180');
+        if(content) content.classList.toggle('hidden');
+        if(arrow) arrow.classList.toggle('rotate-180');
     }
 
     let currentLang = localStorage.getItem('lang') || 'EN';
@@ -336,9 +336,11 @@ tailwind.config = {
         const now = new Date();
         let day = now.getDay();
         
+        // यहाँ हालको सिस्टमको वास्तविक मिति र बार अनुसार चल्ने बनाइएको छ
         let npYear = "२०८३";
         let npMonth = "आश्विन";
-        let npDate = "७";
+        let npDate = now.getDate(); // रियल टाइम अनुसार सर्नेछ
+        
         let dayTextNp = daysNp[day];
         let dayTextEn = daysEn[day];
 
@@ -350,8 +352,8 @@ tailwind.config = {
         } else {
             document.getElementById('nepali-day').innerText = dayTextEn;
             document.getElementById('nepali-year').innerText = "2083";
-            document.getElementById('nepali-month').innerText = "Ashoj";
-            document.getElementById('nepali-date').innerText = "7";
+            document.getElementById('nepali-month').innerText = "September";
+            document.getElementById('nepali-date').innerText = npDate;
         }
     }
 
@@ -436,7 +438,7 @@ tailwind.config = {
             months += 12;
         }
 
-.      const ageBox = document.getElementById('age-result');
+        const ageBox = document.getElementById('age-result');
         const scoreText = document.getElementById('age-score-text');
 
         ageBox.classList.remove('hidden');
